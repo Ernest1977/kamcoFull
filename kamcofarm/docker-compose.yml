@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: kamcofarm_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-foss_agro_db}
+      MYSQL_USER: ${DB_USER:-foss_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-kamcofarm_db_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_db_pass}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: kamcofarm_backend
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-'un-secret-par-defaut-12345'}
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - DB_NAME=${DB_NAME:-foss_agro_db}
+      - DB_USER=${DB_USER:-foss_user}
+      - DB_PASSWORD=${DB_PASSWORD:-kamcofarm_db_pass}
+      - DB_HOST=db
+      - DB_PORT=3306
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: kamcofarm_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+  static_volume:
+  media_volume:

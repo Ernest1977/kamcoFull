@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMCO FARM — Dashboard Admin</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#188701">
+    <meta name="description" content="Dashboard administratif KAMCO FARM — Gestion complète entreprise agricole">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KAMCO Dashboard">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="KAMCO Dashboard">
+    <meta name="msapplication-TileColor" content="#188701">
+    <meta name="msapplication-TileImage" content="icons/icon-96.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+
+    <!-- Splash Screens iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="dashboard.css">
+
+    <!-- Favicon -->
+    <!-- Favicon — Version unique et propre -->
+    <link rel="icon" type="image/png" sizes="32x32" href="dashboard/icons/icon-96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="dashboard/icons/icon-96.png">
+    <link rel="shortcut icon" href="dashboard/icons/icon-96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="dashboard/icons/icon-96.png">
+    <meta name="theme-color" content="#188701">
+</head>
+<body>
+
+    <!-- ========================================
+         ÉCRAN DE CONNEXION
+         ======================================== -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo"><img src="../images/kamcofarm1.png" alt="Logo KAMCO FARM"></div>
+                <h1> KAMCO FARM</h1>
+                <p>Dashboard Administratif</p>
+            </div>
+            <form id="dashLoginForm" class="login-form">
+                <div class="login-field">
+                    <label for="dashUsername">Nom d'utilisateur</label>
+                    <input type="text" id="dashUsername" placeholder="Entrez votre identifiant" required>
+                </div>
+                <div class="login-field">
+                    <label for="dashPassword">Mot de passe</label>
+                    <input type="password" id="dashPassword" placeholder="Entrez votre mot de passe" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Se connecter
+                </button>
+                <p id="loginErrorMsg" class="login-error"></p>
+            </form>
+            <div class="login-footer">
+                <a href="../index.html">← Retour au site</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         LAYOUT PRINCIPAL DASHBOARD
+         ======================================== -->
+    <div id="dashboardLayout" class="dashboard-layout" style="display:none;">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon">🌱</span>
+                    <div class="logo-text">
+                        <strong>KAMCO FARM</strong>
+                        <small>Dashboard</small>
+                    </div>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">✕</button>
+            </div>
+
+            <!-- Profil utilisateur -->
+            <div class="sidebar-user" onclick="navigateTo('profil')" style="cursor:pointer;" title="Voir mon profil">
+                <div class="user-avatar" id="userAvatar">AD</div>
+                <div class="user-info">
+                    <strong id="userName">Admin</strong>
+                    <small id="userRole">Administrateur</small>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Principal</span>
+                    <a href="#" class="nav-item active" data-module="overview">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Vue d'ensemble</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="calendrier">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-label">Calendrier</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">Opérations</span>
+                    <a href="#" class="nav-item" data-module="supplychain">
+                        <span class="nav-icon">🚚</span>
+                        <span class="nav-label">Supply Chain</span>
+                        <span class="nav-badge" id="badgeSupplychain"></span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="equipements">
+                        <span class="nav-icon">🚜</span>
+                        <span class="nav-label">Équipements</span>
+                        <span class="nav-badge" id="badgeEquipements"></span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="location">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-label">Location</span>
+                        <span class="nav-badge" id="badgeLocation"></span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">Gestion</span>
+                    <a href="#" class="nav-item" data-module="finance">
+                        <span class="nav-icon">💰</span>
+                        <span class="nav-label">Finance</span>
+                        <span class="nav-badge" id="badgeFinance"></span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="rh">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-label">Ressources Humaines</span>
+                        <span class="nav-badge" id="badgeRH"></span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="marketing">
+                        <span class="nav-icon">📣</span>
+                        <span class="nav-label">Marketing</span>
+                        <span class="nav-badge" id="badgeMarketing"></span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">Système</span>
+                    <a href="#" class="nav-item" data-module="admin">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">Administration</span>
+                        <span class="nav-badge" id="badgeAdmin"></span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="content">
+                        <span class="nav-icon">📄</span>
+                        <span class="nav-label">Contenu</span>
+                    </a>
+                        <a href="#" class="nav-item" data-module="accounts">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-label">Comptes</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">Données du site</span>
+                    <a href="#" class="nav-item" data-module="produits">
+                        <span class="nav-icon">🍍</span>
+                        <span class="nav-label">Produits</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="gallery">
+                        <span class="nav-icon">🖼️</span>
+                        <span class="nav-label">Galerie</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="partners">
+                        <span class="nav-icon">🤝</span>
+                        <span class="nav-label">Partenaires</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="blogadmin">
+                        <span class="nav-icon">📰</span>
+                        <span class="nav-label">Blog</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="testimonials">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-label">Témoignages</span>
+                    </a>
+                    <a href="#" class="nav-item" data-module="statistics">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-label">Statistiques</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Footer sidebar -->
+            <div class="sidebar-footer">
+                <a href="../index.html" class="nav-item">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-label">Voir le site</span>
+                </a>
+                <a href="/api/docs/" target="_blank" class="nav-item">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Documentation API</span>
+                </a>
+                <a href="#" class="nav-item" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-label">Déconnexion</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- CONTENU PRINCIPAL -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="hamburger" id="hamburgerBtn">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <h2 class="page-title" id="pageTitle">Vue d'ensemble</h2>
+                </div>
+
+                <div class="topbar-center" style="flex:1; max-width:500px; margin:0 1rem;">
+                    <div class="global-search-wrapper" id="globalSearchWrapper">
+                        <div class="global-search-input">
+                            <span class="global-search-icon">🔍</span>
+                            <input type="text" id="globalSearchInput" placeholder="Rechercher partout... (Ctrl+K)" autocomplete="off">
+                            <kbd class="global-search-kbd">Ctrl+K</kbd>
+                        </div>
+                        <div class="global-search-results" id="globalSearchResults" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Notifications -->
+                    <div class="topbar-notif" id="topbarNotif">
+                        <button class="notif-btn" id="notifBtn">
+                            🔔
+                            <span class="notif-count" id="notifCount" style="display:none;">0</span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown" style="display:none;">
+                            <div class="notif-header">
+                                <strong>Notifications</strong>
+                                <button id="markAllReadBtn">Tout marquer lu</button>
+                            </div>
+                            <div class="notif-list" id="notifList">
+                                <p class="notif-empty">Aucune notification</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Switcher -->
+                    <div class="theme-switcher">
+                        <button class="theme-btn" id="themeBtn" title="Changer le thème">
+                            <span id="themeIcon">☀️</span>
+                        </button>
+                        <div class="theme-menu" id="themeMenu">
+                            <button class="theme-option active" data-theme="light" onclick="setTheme('light')">
+                                <div class="theme-preview" style="background:linear-gradient(135deg, #f0f2f5, #ffffff);"></div>
+                                <span>☀️ Light</span>
+                            </button>
+                            <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                                <div class="theme-preview" style="background:linear-gradient(135deg, #0d1117, #161b22);"></div>
+                                <span>🌙 Dark</span>
+                            </button>
+                            <button class="theme-option" data-theme="turquoise" onclick="setTheme('turquoise')">
+                                <div class="theme-preview" style="background:linear-gradient(135deg, #004D40, #4DB6AC);"></div>
+                                <span>💎 Turquoise</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Push Status -->
+                    <button class="topbar-btn" id="pushStatusBtn" onclick="togglePushNotifications()" title="Notifications push">
+                        <span id="pushStatusIcon">🔕</span>
+                    </button>
+
+                    <!-- Refresh -->
+                    <button class="topbar-btn" id="refreshBtn" title="Rafraîchir">🔄</button>
+
+                    <!-- Date -->
+                    <span class="topbar-date" id="topbarDate"></span>
+                </div>
+            </header>
+
+            <!-- Zone de contenu dynamique -->
+            <div class="content-area" id="contentArea">
+                <div class="loading-screen">
+                    <div class="spinner"></div>
+                    <p>Chargement du dashboard...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+    
+
+    <!-- Scripts -->
+
+     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="modules/whatsapp-chat.js"></script>
+    <script src="modules/charts.js"></script>
+    <script src="modules/theme.js"></script>
+    <script src="modules/calendar.js"></script>
+    <script src="modules/export.js"></script>
+    <script src="modules/search.js"></script>
+    <script src="modules/account.js"></script>
+    <script src="modules/supplychain.js"></script>
+    <script src="modules/finance.js"></script>
+    <script src="modules/rh.js"></script>
+    <script src="modules/marketing.js"></script>
+    <script src="modules/equipements.js"></script>
+    <script src="modules/location.js"></script>
+    <script src="modules/administration.js"></script>
+    <script src="modules/content.js"></script>
+    <script src="modules/profil.js"></script>
+    <script src="modules/push.js"></script>
+</body>
+</html>

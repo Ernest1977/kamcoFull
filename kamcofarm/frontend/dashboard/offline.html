@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMCO FARM — Hors ligne</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0d1117, #161b22);
+            color: white; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 2rem;
+        }
+        .container { max-width: 500px; }
+        .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #4CAF50; }
+        p { color: #8b949e; margin-bottom: 1.5rem; line-height: 1.6; }
+        .btn {
+            display: inline-block; padding: 0.8rem 2rem;
+            background: #188701; color: white; border: none;
+            border-radius: 25px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .tips { margin-top: 2rem; text-align: left; }
+        .tips h3 { color: #4CAF50; margin-bottom: 0.8rem; font-size: 1rem; }
+        .tips li { color: #8b949e; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📡</div>
+        <h1>Vous êtes hors ligne</h1>
+        <p>La connexion internet n'est pas disponible pour le moment. Vérifiez votre connexion et réessayez.</p>
+        <button class="btn" onclick="window.location.reload()">🔄 Réessayer</button>
+        <div class="tips">
+            <h3>💡 En attendant :</h3>
+            <ul>
+                <li>Vérifiez votre connexion WiFi ou données mobiles</li>
+                <li>Essayez de vous rapprocher du routeur</li>
+                <li>Le dashboard se reconnectera automatiquement</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

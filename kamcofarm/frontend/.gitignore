@@ -1,0 +1,13 @@
+# Build output
+/dist
+
+# Node modules
+/node_modules
+
+# NPM
+yarn-error.log
+package-lock.json
+npm-debug.log*
+
+# System files
+.DS_Store

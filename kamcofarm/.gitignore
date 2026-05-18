@@ -1,0 +1,24 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+# Environnement
+.venv/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Media uploads
+media/
+backend/db.sqlite3
+backend/staticfiles/
+
+# IDE
+.vscode/
+.idea/
+
+# Frontend build
+/frontend/dist/
+/frontend/node_modules/
+/frontend/package-lock.json

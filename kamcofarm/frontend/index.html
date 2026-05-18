@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KAMCO FARM Leader dans la culture, vente et négoce de fruits et légumes au Cameroun et dans la sous région.">
+    <title> 
+        KAMCO FARM- Votre Partenaire Agricole de Confiance
+    </title>
+    <!-- Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="images/logo1.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/logo1.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="images/icon-72.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="images/icon-96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+    <link rel="apple-touch-icon" href="images/logo1.png">
+    
+</head>
+<body>
+    
+
+    <!-- Header Navigation -->
+     <!-- Ajout du sélecteur de langue dans le header -->
+    <header>
+        <nav>
+            <div class="logo"><img src="../images/kamcofarm1.png" alt="Logo KAMCO FARM"></div>
+            
+            <!-- Menu reste identique -->
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#accueil" data-translate="nav.home">Accueil</a></li>
+                <li><a href="#produits" data-translate="nav.products">Produits</a></li>
+                <li><a href="#galerie" data-translate="nav.gallery">Galerie</a></li>
+                <li><a href="#services" data-translate="nav.services">Services</a></li>
+                <li><a href="#partenaires" data-translate="nav.partners">Partenaires</a></li>
+                <li><a href="#blog" data-translate="nav.blog">Blog</a></li>
+                <!--<li><a href="#devis" data-translate="nav.quote">Devis</a></li>-->
+                <!--<li><a href="#espace-employes" data-translate="nav.login">Espace Employés</a></li> -->
+                <li><a href="#contact" data-translate="nav.contact">Contact</a></li>
+            </ul>
+            <a href="#devis" class="cta-button" data-translate="nav.getQuote">Demander un Devis</a>
+
+
+            <!-- Menu déroulant de langue (à droite) -->
+            <div class="language-dropdown">
+                <button class="language-toggle" id="languageToggle">
+                    <img src="https://flagcdn.com/24x18/fr.png" alt="FR" class="flag-icon" id="currentFlag">
+                    <span id="currentLang">FR</span>
+                    <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                        <path d="M1 1l5 5 5-5" stroke="currentColor" fill="none" stroke-width="2"/>
+                    </svg>
+                </button>
+                <ul class="language-menu" id="languageMenu">
+                    <li class="language-option active" data-lang="fr">
+                        <img src="https://flagcdn.com/24x18/fr.png" alt="Français">
+                        <span>Français</span>
+                    </li>
+                    <li class="language-option" data-lang="en">
+                        <img src="https://flagcdn.com/24x18/gb.png" alt="English">
+                        <span>English</span>
+                    </li>
+                </ul>
+            </div>
+
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="accueil">
+        <div class="hero-background1"><img src="images/back-hero2.png" alt="KAMCO FARM"></div> 
+        <h1 data-translate="hero.title">Bienvenue chez KAMCO FARM</h1>
+        <p data-translate="hero.subtitle">Leader dans la Culture, la Vente et le Négoce de Fruits et Légumes Tropicaux de Qualité Premium</p>
+        <div class="hero-buttons">
+            <a href="#produits" class="btn-primary" data-translate="hero.discoverBtn">Découvrir nos Produits</a>
+            <a href="#devis" class="btn-secondary" data-translate="hero.quoteBtn">Demander un Devis</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="about-us">
+                <h2 class="section-title" data-translate="about.title">À Propos de KAMCO FARM</h2>
+                <p data-translate="about.content">
+                    Fondé en 2021, kamco-scoop farm est une coopérative d’agriculteurs exerçant dans la culture et la commercialisation locale des produits vivriers frais.
+                     De par leur expérience en culture biologique de produits locaux acquise au fil du temps,  ces producteurs agricoles mettent en pratique leur savoir faire et
+                    connaissances pour la production des denrées de qualité dans un contexte climatique variable et imprévisible, et dans un climat social où l’agriculture est encore en pleine expansion et très peu industrialisée. 
+                    Elle ambitionne d’une part de promouvoir et vulgariser la mécanisation agricole locale et d’autre part de concourir sur le marché international en se lançant 
+                    dans l’exportation des produits alimentaires made in Cameroon suite à une forte demande dans certaines parties du monde où la culture de ces produits est quasiment inexistante à cause des conditions climatiques.
+                </p>
+            </div>
+            </br>
+            <h2 class="section-title" data-translate="why.title">Pourquoi nous Choisir ?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3 data-translate="why.durable_title">Agriculture Durable</h3>
+                    <p data-translate="why.durable">
+                        Pratiques agricoles respectueuses de l'environnement garantissant des produits sains et de qualité supérieure.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3 data-translate="why.certified_title">Qualité Certifiée</h3>
+                    <p data-translate="why.certified">
+                        Contrôle qualité rigoureux à chaque étape, de la plantation à la livraison de vos produits.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3 data-translate="why.fast_title">Livraison Rapide</h3>
+                    <p data-translate="why.fast">
+                        Réseau logistique optimisé pour des livraisons fraîches et ponctuelles partout en Afrique et dans le monde.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <!-- PRODUCTS SECTION -->
+    <section class="products" id="produits">
+        <div class="container">
+            <h2 class="section-title" data-translate="products.title">Nos Produits Premium</h2>
+            
+            <div class="carousel-section products-carousel">
+                <button class="carousel-nav prev" aria-label="Précédent">❮</button>
+                
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="productsTrack">
+                        <!-- Item 1 -->
+                        <div class="carousel-item product-card">
+                            <div class="product-image"><img src="images/kamcocayen.png" alt="Ananas"></div>
+                            <div class="product-info">
+                                <h3 data-translate="products pineapple_title">Ananas</h3>
+                                <p data-translate="products pineapple_description">Ananas sucrés et juteux</p>
+                                <ul><li data-translate="products variety_1">Variété Pain de Sucre</li><li data-translate="products variety_2">Cayenne Lisse</li></ul>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="carousel-item product-card">
+                            <div class="product-image"><img src="images/kamcocalina.png" alt="Papaye"></div>
+                            <div class="product-info">
+                                <h3 data-translate="products papaya_title">Papaye</h3>
+                                <p data-translate="products papaya_description">Papayes fraîches</p>
+                                <ul><li data-translate="products papaya_variety_1">Variétés Câlina</li><li data-translate="products papaya_variety_2">Maturité optimale</li></ul>
+                            </div>
+                        </div>
+                        <!-- Item 3 -->
+                        <div class="carousel-item product-card">
+                            <div class="product-image"><img src="images/kamcoco.png" alt="Noix de Coco"></div>
+                            <div class="product-info">
+                                <h3 data-translate="products coconut_title">Noix de Coco</h3>
+                                <p data-translate="products coconut_description">Noix de coco fraîches</p>
+                                <ul><li data-translate="products coconut_variety_1">Noix fraîches</li><li data-translate="products coconut_variety_2">Eau de coco pure</li></ul>
+                            </div>
+                        </div>
+                        <!-- Item 4 -->
+                        <div class="carousel-item product-card">
+                            <div class="product-image"><img src="images/CorossDerivé.jfif" alt="Corossol"></div>
+                            <div class="product-info">
+                                <h3 data-translate="products guava_title">Corossol</h3>
+                                <p data-translate="products guava_description">Fruit exotique</p>
+                                <ul><li data-translate="products guava_variety_1">Disponible frais</li><li data-translate="products guava_variety_2">Pulpe pour jus</li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="carousel-nav next" aria-label="Suivant">❯</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title" style="color: white;" data-translate="stats.title">Nos Statistiques Clés</h2>
+            <div class="stats-grid"  id="statsGrid">
+                <div class="stat-item">
+                    <h3>78+</h3>
+                    <p data-translate="stats.hectares">Hectares Cultivés</p>
+                </div>
+                <div class="stat-item">
+                    <h3>30+</h3>
+                    <p data-translate="stats.tonnes">Tonnes/An</p>
+                </div>
+                <div class="stat-item">
+                    <h3>8+</h3>
+                    <p data-translate="stats.clients">Clients Satisfaits</p>
+                </div>
+                <div class="stat-item">
+                    <h3>4+</h3>
+                    <p data-translate="stats.years">Années d'Expérience</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY SECTION -->
+    <section class="gallery" id="galerie">
+        <div class="container">
+            <h2 class="section-title" data-translate="gallery.title">Notre Galerie</h2>
+            
+            <div class="carousel-section gallery-carousel">
+                <button class="carousel-nav prev" aria-label="Précédent">❮</button>
+                
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="galleryTrack">
+                        <!-- Item 1 -->
+                        <div class="carousel-item gallery-item">
+                            <div class="gallery-image"><img src="images/champ.jfif" alt="Plantation"></div>
+                            <div class="gallery-overlay"><h3 data-translate="gallery plantation_title">Plantation 🍍</h3><p data-translate="gallery plantation_description">Nos champs</p></div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="carousel-item gallery-item">
+                            <div class="gallery-image"><img src="images/recolte-papay.png" alt="Récolte"></div>
+                            <div class="gallery-overlay"><h3 data-translate="gallery harvest_title">Récolte 🥭</h3><p data-translate="gallery harvest_description">Sélection manuelle</p></div>
+                        </div>
+                        <!-- Item 3 -->
+                        <div class="carousel-item gallery-item">
+                            <div class="gallery-image"><img src="images/poudre-coco.png" alt="Coco"></div>
+                            <div class="gallery-overlay"><h3 data-translate="gallery derivatives_title">Dérivés 🥥</h3><p data-translate="gallery derivatives_description">Processus moderne</p></div>
+                        </div>
+                        <!-- Item 4 -->
+                        <div class="carousel-item gallery-item">
+                            <div class="gallery-image"><img src="images/vend-pineapple.png" alt="Conditionnement"></div>
+                            <div class="gallery-overlay"><h3 data-translate="gallery packaging_title">Conditionnement 📦</h3><p data-translate="gallery packaging_description">Emballage professionnel</p></div>
+                        </div>
+                        <!-- Ajoutez les autres items ici... -->
+                    </div>
+                </div>
+                
+                <button class="carousel-nav next" aria-label="Suivant">❯</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <div class="container">
+            <h2 class="section-title" data-translate="services.title">Nos Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3 data-translate="services.culture_title">🌾 Culture et Production</h3>
+                    <p data-translate="services.culture_description">Exploitation agricole moderne avec techniques de pointe pour une production optimale et durable.</p>
+                </div>
+                <div class="service-card">
+                    <h3 data-translate="services.trading_title">💼 Négoce B2B</h3>
+                    <p data-translate="services.trading_description">Solutions commerciales adaptées aux besoins des grossistes, exportateurs et transformateurs.</p>
+                </div>
+                <div class="service-card">
+                    <h3 data-translate="services.packaging_title">📦 Conditionnement Sur Mesure</h3>
+                    <p data-translate="services.packaging_description">Emballage personnalisé selon vos exigences pour l'export ou la distribution locale.</p>
+                </div>
+                <div class="service-card">
+                    <h3 data-translate="services.export_title">🚢 Export & Logistique</h3>
+                    <p data-translate="services.export_description">Gestion complète de l'exportation avec documentation et logistique internationale.</p>
+                </div>
+                <div class="service-card">
+                    <h3 data-translate="services.agricultural_advice_title">📊 Conseil Agricole</h3>
+                    <p data-translate="services.agricultural_advice_description">Accompagnement technique et formation pour optimiser vos rendements agricoles.</p>
+                </div>
+                <div class="service-card">
+                    <h3 data-translate="services.supply_contracts_title">🤝 Contrats d'Approvisionnement</h3>
+                    <p data-translate="services.supply_contracts_description">Partenariats à long terme avec garantie de volume et qualité constante.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Partners Section -->
+    <section class="partners" id="partenaires">
+        <div class="container">
+            <h2 class="section-title" data-translate="partners.title">Nos Partenaires de Confiance</h2>
+
+            <div class="carousel-section partners-carousel">
+                <button class="carousel-nav prev" aria-label="Précédent">❮</button>
+
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="partnersTrack">
+                        <div class="carousel-item partner-logo">
+                            <span><img src="images/santalucia.png" alt="Santa Lucia"></span>
+                            <p>Santa Lucia</p>
+                        </div>
+                        <div class="carousel-item partner-logo">
+                            <span><img src="images/africantrad.png" alt="Africa Trade"></span>
+                            <p>African Trade</p>
+                        </div>
+                        <div class="carousel-item partner-logo">
+                            <span><img src="images/scoopfemmes.png" alt="Scoop Femmes Résilientes"></span>
+                            <p>Scoop Femmes</p>
+                        </div>
+                        <div class="carousel-item partner-logo">
+                            <span><img src="images/freshco1.png" alt="Fresh & Co"></span>
+                            <p>Fresh & Co</p>
+                        </div>
+                        <div class="carousel-item partner-logo">
+                            <span><img src="images/Kamco1.png" alt="Kamco Farm"></span>
+                            <p>Kamco Farm</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-nav next" aria-label="Suivant">❯</button>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="temoignages">
+        <div class="container">
+            <h2 class="section-title" style="color: white;" data-translate="testimonials.title">Ce Que Disent Nos Clients</h2>
+            <div class="carousel-section testimonials-carousel">
+                <button class="carousel-nav prev" aria-label="Précédent">❮</button>
+
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="testimonialsTrack">
+                        <!-- Témoignages dynamiques injectés ici -->
+                    </div>
+                </div>
+
+                <button class="carousel-nav next" aria-label="Suivant">❯</button>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Blog Section -->
+    <section class="blog" id="blog">
+        <div class="container">
+            <h2 class="section-title" data-translate="blog.title">Actualités & Blog</h2>
+
+            <div class="carousel-section blog-carousel">
+                <button class="carousel-nav prev" aria-label="Précédent">❮</button>
+
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="blogTrack" data-translate="blog.no_posts">
+                        <!-- Articles dynamiques injectés ici -->
+                    </div>
+                </div>
+
+                <button class="carousel-nav next" aria-label="Suivant">❯</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote System Section -->
+    <section class="quote-system" id="devis">
+        <div class="container">
+            <h2 class="section-title" data-translate="quote.title">Demander un Devis Personnalisé</h2>
+            <form class="quote-form" id="quoteForm">
+                <h3 data-translate="quote.form_title">Remplissez le formulaire pour recevoir votre devis sous 24h</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company" data-translate="quote.company_label">Nom de l'entreprise *</label>
+                        <input type="text" id="company" name="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactName" data-translate="quote.contact_label">Nom du contact *</label>
+                        <input type="text" id="contactName" name="contactName" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quoteEmail" data-translate="quote.email_label">Email *</label>
+                        <input type="email" id="quoteEmail" name="quoteEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quotePhone" data-translate="quote.phone_label">Téléphone *</label>
+                        <input type="tel" id="quotePhone" name="quotePhone" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label data-translate="quote.products_label">Produits souhaités *</label>
+                    <div class="product-selection">
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="ananas">
+                            <span>🍍 Ananas</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="papaye">
+                            <span>🏉 Papaye</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="banane">
+                            <span>🥑 Avocat</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="banane">
+                            <span>🥭 Mangue</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="banane">
+                            <span>🍌 Banane</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="coco">
+                            <span>🥥 Noix de Coco</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="corossol">
+                            <span>🟢 Corossol</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="fruits deshydratés">
+                            <span>🍂 Fruits Deshydratés</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="sesame">
+                            <span>🌾 Graines de Sésame</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="Tournesol">
+                            <span>🌻 Graines de Tournesol</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="Tubercules">
+                            <span>🥔 Tubercules</span>
+                        </label>
+                        <label class="product-checkbox">
+                            <input type="checkbox" name="products" value="Légumes">
+                            <span>🥬 Légumes</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity" data-translate="quote.quantity_label">Quantité estimée (tonnes) *</label>
+                        <input type="number" id="quantity" name="quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="frequency" data-translate="quote.frequency_label">Fréquence de commande *</label>
+                        <select id="frequency" name="frequency" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="unique" data-translate="quote.frequency_unique">Commande unique</option>
+                            <option value="mensuelle" data-translate="quote.frequency_monthly">Mensuelle</option>
+                            <option value="trimestrielle" data-translate="quote.frequency_quarterly">Trimestrielle</option>
+                            <option value="annuelle" data-translate="quote.frequency_yearly">Annuelle</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination" data-translate="quote.destination_label">Destination de livraison *</label>
+                    <input type="text" id="destination" name="destination" placeholder="Ville, Pays" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="requirements" data-translate="quote.requirements_label">Exigences spécifiques (optionnel)</label>
+                    <textarea id="requirements" name="requirements" placeholder="Spécifier le type (légumes-fruits secs-tubercules...), Calibrage, conditionnement, certifications requises..."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn" data-translate="quote.submit_button">Recevoir Mon Devis Gratuit</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title" data-translate="contact.title">Contactez-Nous</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3 data-translate="contact.subtitle">Prenons Contact</h3>
+                    <p data-translate="contact.description">Nous sommes à votre écoute pour répondre à tous vos besoins en produits agricoles tropicaux de qualité.</p>
+                    
+                    <div class="contact-item">
+                        <span>📍</span>
+                        <div>
+                            <strong data-translate="contact.address_label">Adresse:</strong><br>
+                            AWAE - Yaoundé, Cameroun
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span>📞</span>
+                        <div>
+                            <strong>Téléphone:</strong><br>
+                            +237 6 94 57 20 50
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span>✉️</span>
+                        <div>
+                            <strong>Email:</strong><br>
+                            infoclients@kamcofarm.com
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/share/18Qf7LqspC/?mibextid=wwXIfr">f</a>
+                        <a href="https://www.linkedin.com/company/kamco-farm/">in</a>
+                        <!--<a href="https://twitter.com/kamco_farm">tw</a>
+                        <a href="https://www.instagram.com/kamco_farm/">ig</a> -->
+                    </div>
+                </div>
+                
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="name" data-translate="contact.name_label">Nom Complet</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" data-translate="contact.email_label">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone" data-translate="contact.phone_label">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message" data-translate="contact.message_label">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" data-translate="contact.submit_button">Envoyer le Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4 data-translate="footer.about_header">À Propos KAMCO FARM</h4>
+                <p data-translate="footer.about_content">Leader dans la production et la commercialisation de fruits tropicaux de qualité premium au Cameroun et dans la sous-région.</p>
+                <a href="#" onclick="ouvrirMentionsLegales(); return false;">Mentions Légales</a><br>
+            </div>
+            
+            <div class="footer-section">
+                <h4 data-translate="footer.quick_links_header">Liens Rapides</h4>
+                <a href="#produits" data-translate="footer.quick_links.products">Nos Produits</a><br>
+                <a href="#services" data-translate="footer.quick_links.services">Nos Services</a><br>
+                <a href="#contact" data-translate="footer.quick_links.contact">Contact</a><br>
+                <a href="#" onclick="ouvrirPolitiqueConfidentialite(); return false;">Politique de Confidentialité</a><br>
+                <a href="#" onclick="ouvrirFormulaireDroitsRGPD(); return false;">Vos Droits RGPD</a><br>
+                
+            </div>
+            
+            <div class="footer-section">
+                <h4 data-translate="footer.products_header">Nos Produits</h4>
+                <p>• Ananas Premium<br>
+                   • Papayes Fraîches<br>
+                   • Noix de Coco<br>
+                   • Légumes</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4 data-translate="footer.hours_header">Heures d'Ouverture</h4>
+                <p data-translate="footer.hours_content">Lundi - Vendredi: 8h00 - 18h00<br>
+                   Samedi: 9h00 - 14h00<br>
+                   Dimanche: Fermé
+                </p>
+                <p class="social-links">
+                    <a href="https://www.facebook.com/share/18Qf7LqspC/?mibextid=wwXIfr">f</a>
+                    <a href="https://www.linkedin.com/company/kamco-farm/">in</a>
+                </p>
+            </div>
+        </div>
+        
+        <hr style="border-color: #444; margin: 2rem 0;">
+        
+        <p>&copy; 2026  KAMCO FARM. Tous droits réservés. | Cultivons l'avenir Ensemble</p>
+        <p>Designed by IROKOTECH</p>
+        <p><a href="#top">Retour en Haut ↑</a></p>
+    </footer>
+   
+    <!-- Lien vers le fichier JavaScript -->
+    <script src="script.js"></script>
+    <script src="dashboard/modules/whatsapp-chat.js"></script>
+
+
+    <!-- RGPD Cookie Banner -->
+    <div id="cookieBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:10000; background:white; box-shadow:0 -5px 20px rgba(0,0,0,0.15); padding:1.5rem 5%; font-family:'Segoe UI',sans-serif;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
+                <div style="flex:1; min-width:300px;">
+                    <h3 style="margin:0 0 0.5rem; color:#188701; font-size:1.1rem;">🍪 Nous respectons votre vie privée</h3>
+                    <p style="margin:0; font-size:0.9rem; color:#555; line-height:1.6;">
+                        Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez choisir les cookies que vous acceptez.
+                        <a href="#" onclick="ouvrirPolitiqueConfidentialite()" style="color:#188701;">Politique de confidentialité</a>
+                    </p>
+
+                    <div id="cookieDetails" style="display:none; margin-top:1rem;">
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" checked disabled> <strong>Essentiels</strong> <small style="color:#999;">(toujours actifs)</small>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="cookieAnalytics" checked> <strong>Analytics</strong> <small style="color:#999;">— Nous aident à améliorer le site</small>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="cookieMarketing"> <strong>Marketing</strong> <small style="color:#999;">— Contenus personnalisés</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:0.5rem; min-width:200px;">
+                    <button onclick="accepterTousCookies()" style="background:#188701; color:white; border:none; padding:0.7rem 1.5rem; border-radius:25px; font-weight:bold; cursor:pointer; font-size:0.9rem;">✅ Tout accepter</button>
+                    <button onclick="refuserCookiesNonEssentiels()" style="background:white; color:#333; border:1px solid #ddd; padding:0.7rem 1.5rem; border-radius:25px; font-weight:bold; cursor:pointer; font-size:0.9rem;">❌ Refuser</button>
+                    <button onclick="personnaliserCookies()" style="background:none; color:#188701; border:none; padding:0.5rem; cursor:pointer; font-size:0.85rem; text-decoration:underline;">⚙️ Personnaliser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RGPD Scripts -->
+    <script>
+    // Vérifier si le consentement a déjà été donné
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('rgpd_consent')) {
+            document.getElementById('cookieBanner').style.display = 'block';
+        }
+    });
+
+    function accepterTousCookies() {
+        const consentements = {
+            COOKIES: true,
+            ANALYTICS: true,
+            MARKETING: true,
+            DONNEES_PERSONNELLES: true
+        };
+        sauvegarderConsentement(consentements);
+        document.getElementById('cookieBanner').style.display = 'none';
+    }
+
+    function refuserCookiesNonEssentiels() {
+        const consentements = {
+            COOKIES: true,
+            ANALYTICS: false,
+            MARKETING: false,
+            DONNEES_PERSONNELLES: true
+        };
+        sauvegarderConsentement(consentements);
+        document.getElementById('cookieBanner').style.display = 'none';
+    }
+
+    function personnaliserCookies() {
+        const details = document.getElementById('cookieDetails');
+        details.style.display = details.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function sauvegarderConsentement(consentements) {
+        localStorage.setItem('rgpd_consent', JSON.stringify(consentements));
+        localStorage.setItem('rgpd_consent_date', new Date().toISOString());
+
+        // Envoyer au backend
+        fetch(`${(window.location.origin.includes('127.0.0.1') || window.location.origin.includes('localhost')) ? 'http://127.0.0.1:8000' : window.location.origin}/api/administration/rgpd/consentement/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ consentements })
+        }).catch(() => {});
+    }
+
+    function ouvrirPolitiqueConfidentialite() {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10001; display:flex; align-items:center; justify-content:center; padding:20px;';
+        modal.innerHTML = `
+            <div style="background:white; border-radius:16px; width:100%; max-width:800px; max-height:90vh; overflow-y:auto; padding:2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h2 style="color:#188701; margin:0;">🔒 Politique de Confidentialité</h2>
+                    <button onclick="this.closest('div[style]').remove()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+                </div>
+
+                <h3 style="color:#188701;">1. Responsable du traitement</h3>
+                <p>KAMCO FARM / FOSS AGRO FARM, Logpom - Douala, Cameroun. Email : infoclients@fossagrofarm.com</p>
+
+                <h3 style="color:#188701;">2. Données collectées</h3>
+                <p>Nous collectons les données suivantes :</p>
+                <ul>
+                    <li><strong>Données d'identification</strong> : nom, prénom, email, téléphone</li>
+                    <li><strong>Données professionnelles</strong> : poste, département, matricule</li>
+                    <li><strong>Données de navigation</strong> : adresse IP, cookies, pages visitées</li>
+                    <li><strong>Données commerciales</strong> : commandes, devis, historique d'achats</li>
+                </ul>
+
+                <h3 style="color:#188701;">3. Finalités du traitement</h3>
+                <ul>
+                    <li>Gestion de la relation client et fournisseur</li>
+                    <li>Traitement des commandes et facturations</li>
+                    <li>Gestion des ressources humaines</li>
+                    <li>Amélioration de nos services</li>
+                    <li>Communications marketing (avec consentement)</li>
+                </ul>
+
+                <h3 style="color:#188701;">4. Base légale</h3>
+                <p>Le traitement est fondé sur : le consentement, l'exécution du contrat, les obligations légales et l'intérêt légitime.</p>
+
+                <h3 style="color:#188701;">5. Durée de conservation</h3>
+                <ul>
+                    <li>Données clients : 5 ans après la dernière interaction</li>
+                    <li>Données employés : durée du contrat + 5 ans</li>
+                    <li>Données de navigation : 13 mois</li>
+                    <li>Factures : 10 ans (obligation légale)</li>
+                </ul>
+
+                <h3 style="color:#188701;">6. Vos droits</h3>
+                <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+                <ul>
+                    <li><strong>Droit d'accès</strong> : obtenir une copie de vos données</li>
+                    <li><strong>Droit de rectification</strong> : corriger vos données</li>
+                    <li><strong>Droit à l'effacement</strong> : demander la suppression</li>
+                    <li><strong>Droit à la portabilité</strong> : recevoir vos données dans un format structuré</li>
+                    <li><strong>Droit d'opposition</strong> : s'opposer au traitement</li>
+                    <li><strong>Droit à la limitation</strong> : limiter le traitement</li>
+                </ul>
+
+                <h3 style="color:#188701;">7. Exercer vos droits</h3>
+                <p>Pour exercer vos droits, envoyez un email à <a href="mailto:infoclients@fossagrofarm.com" style="color:#188701;">infoclients@fossagrofarm.com</a> ou utilisez le formulaire ci-dessous.</p>
+
+                <h3 style="color:#188701;">8. Cookies</h3>
+                <p>Nous utilisons des cookies essentiels (fonctionnement du site), analytics (amélioration) et marketing (avec votre consentement).</p>
+
+                <h3 style="color:#188701;">9. Sécurité</h3>
+                <p>Vos données sont protégées par chiffrement SSL, authentification JWT, et contrôle d'accès par rôles.</p>
+
+                <p style="color:#999; font-size:0.85rem; margin-top:2rem;">Dernière mise à jour : Avril 2026 — Version 1.0</p>
+
+                <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid #eee;">
+                    <button onclick="this.closest('div[style]').remove()" style="background:#188701; color:white; border:none; padding:0.7rem 2rem; border-radius:25px; font-weight:bold; cursor:pointer;">Fermer</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    }
+    </script>
+
+</body>
+</html>
