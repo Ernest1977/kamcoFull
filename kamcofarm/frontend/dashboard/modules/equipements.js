@@ -6,7 +6,7 @@ async function loadEquipementsModule() {
     const area = document.getElementById('contentArea');
 
     try {
-        const dashData = await apiGet('/api/equipements/admin/').catch(() => null);
+        const dashData = await apiGet('/api/equipements/dashboard/').catch(() => null);
         const eqData = await apiGet('/api/equipements/equipements/').catch(() => []);
         const catData = await apiGet('/api/equipements/categories/').catch(() => []);
         const certData = await apiGet('/api/equipements/certifications/').catch(() => []);

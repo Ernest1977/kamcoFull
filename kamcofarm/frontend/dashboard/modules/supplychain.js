@@ -10,7 +10,7 @@ async function loadSupplychainModule() {
 
     try {
         const [dashboard, commandes, fournisseurs, livraisons, mouvements] = await Promise.all([
-            apiGet('/api/supplychain/admin/').catch(() => null),
+            apiGet('/api/supplychain/dashboard/').catch(() => null),
             apiGet('/api/supplychain/commandes-clients/').catch(() => []),
             apiGet('/api/supplychain/fournisseurs/').catch(() => []),
             apiGet('/api/supplychain/livraisons/').catch(() => []),
@@ -1221,7 +1221,7 @@ async function loadSupplychainModule() {
 
     try {
         const [dashboard, commandes, commandesFrn, fournisseurs, livraisons, mouvements] = await Promise.all([
-            apiGet('/api/supplychain/admin/').catch(() => null),
+            apiGet('/api/supplychain/dashboard/').catch(() => null),
             apiGet('/api/supplychain/commandes-clients/').catch(() => []),
             apiGet('/api/supplychain/commandes-fournisseurs/').catch(() => []),
             apiGet('/api/supplychain/fournisseurs/').catch(() => []),

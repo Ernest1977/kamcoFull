@@ -22,13 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR.parent / '.env')
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'clé-temporaire-dev-uniquement')
-### SECRET_KEY = 'django-insecure-6u1y*4&fu*0za+487cu2eeoky@odlu4ub67rlja!-8int(cq97' ###
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -177,22 +173,15 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuration pour l'API (Sécurité initiale)
-#CORS_ALLOW_ALL_ORIGINS = True # À retirer en production, mais utile pour tester le frontend localement
-
-
-# CORS_ALLOW_ALL_ORIGINS = False
-# CORS_ALLOWED_ORIGINS = [
-#    'https://kamcofarm.com',
-#    'https://dashboard.kamcofarm.com',
-# ]
-# if DEBUG:
-#    CORS_ALLOWED_ORIGINS += ['http://127.0.0.1:5500', 'http://localhost:5500'] 
-
-
 # CORS
-CORS_ALLOW_ALL_ORIGINS = DEBUG
 if not DEBUG:
-    CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',')
+    cors_env = os.environ.get('CORS_ORIGINS', '')
+    if cors_env:
+        # Nettoie les espaces vides autour des virgules et ignore les chaînes vides
+        CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_env.split(',') if origin.strip()]
+    else:
+        # Fallback de sécurité si le fichier .env n'est pas bien lu
+        CORS_ALLOWED_ORIGINS = ['https://kamcofarm.com', 'https://www.kamcofarm.com']
 
 # URLs
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:5500')
@@ -262,9 +251,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST_USER = 'noreply@fossagrofarm.com'
 # EMAIL_HOST_PASSWORD = 'mot_de_passe_smtp'
 
-DEFAULT_FROM_EMAIL = 'FOSS AGRO FARM <noreply@fossagrofarm.com>'
-ADMIN_EMAIL = 'infoclients@fossagrofarm.com'
-CONTACT_EMAIL = 'infoclients@fossagrofarm.com'
+DEFAULT_FROM_EMAIL = 'KAMCO FARM <noreply@kamcofarm.com>'
+ADMIN_EMAIL = 'infoclients@kamcofarm.com'
+CONTACT_EMAIL = 'infoclients@kamcofarm.com'
 
 # URL du frontend (pour les liens dans les emails)
 FRONTEND_URL = 'http://127.0.0.1:5500'
@@ -274,7 +263,7 @@ BACKEND_URL = 'http://127.0.0.1:8000'
 
 CSRF_TRUSTED_ORIGINS = [
     'https://kamcofarm.com',
-    'https://dashboard.kamcofarm.com',
+    'https://www.kamcofarm.com',
 ]
 
 
@@ -285,6 +274,9 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ========================================

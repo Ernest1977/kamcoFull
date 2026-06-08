@@ -7,7 +7,7 @@ async function loadRHModule() {
 
     try {
         const [dashboard, employes, departements, conges, presences, fichesPaie] = await Promise.all([
-            apiGet('/api/rh/admin/').catch(() => null),
+            apiGet('/api/rh/dashboard/').catch(() => null),
             apiGet('/api/rh/employes/').catch(() => []),
             apiGet('/api/rh/departements/').catch(() => []),
             apiGet('/api/rh/conges/').catch(() => []),

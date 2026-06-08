@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -29,10 +27,11 @@ services:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-'un-secret-par-defaut-12345'}
       - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - CORS_ORIGINS=${CORS_ORIGINS:-'https://kamcofarm.com,https://www.kamcofarm.com'}
       - DB_NAME=${DB_NAME:-foss_agro_db}
       - DB_USER=${DB_USER:-foss_user}
       - DB_PASSWORD=${DB_PASSWORD:-kamcofarm_db_pass}
-      - DB_HOST=db
+      - DB_HOST=${DB_HOST:-db}
       - DB_PORT=3306
     depends_on:
       - db
@@ -45,9 +44,11 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
 

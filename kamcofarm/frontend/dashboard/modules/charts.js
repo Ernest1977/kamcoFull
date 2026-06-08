@@ -48,8 +48,8 @@ async function loadOverviewModule() {
     const area = document.getElementById('contentArea');
 
     try {
-        const dashData = await apiGet('/api/administration/admin/').catch(() => null);
-        const financeDash = await apiGet('/api/finance/admin/').catch(() => null);
+        const dashData = await apiGet('/api/administration/dashboard/').catch(() => null);
+        const financeDash = await apiGet('/api/finance/dashboard/').catch(() => null);
 
         if (!dashData && !financeDash) {
             area.innerHTML = renderOverviewFallback();
@@ -400,7 +400,7 @@ function renderChartFlotte(dashData) {
         disponibles = dashData?.supplychain?.fournisseurs_actifs || 0;
 
         // Essayer de charger les données équipements
-        apiGet('/api/equipements/admin/').then(eqDash => {
+        apiGet('/api/equipements/dashboard/').then(eqDash => {
             if (eqDash?.flotte) {
                 disponibles = eqDash.flotte.disponibles || 0;
                 enLocation = eqDash.flotte.en_location || 0;
@@ -446,7 +446,7 @@ function renderChartLeadsPipeline(dashData) {
     const leadsData = dashData?.marketing?.leads_nouveaux;
 
     // Charger les données leads
-    apiGet('/api/marketing/admin/').then(mktDash => {
+    apiGet('/api/marketing/dashboard/').then(mktDash => {
         const parStatut = mktDash?.leads?.par_statut || {};
 
         const labels = ['Nouveau', 'Contacté', 'Qualifié', 'Proposition', 'Négociation', 'Converti', 'Perdu'];

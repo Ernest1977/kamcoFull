@@ -7,7 +7,7 @@ async function loadMarketingModule() {
 
     try {
         // Charger toutes les données en parallèle
-        const dashboardData = await apiGet('/api/marketing/admin/').catch(() => null);
+        const dashboardData = await apiGet('/api/marketing/dashboard/').catch(() => null);
         const leadsData = await apiGet('/api/marketing/leads/').catch(() => []);
         const sourcesData = await apiGet('/api/marketing/sources-leads/').catch(() => []);
         const campagnesData = await apiGet('/api/marketing/campagnes/').catch(() => []);

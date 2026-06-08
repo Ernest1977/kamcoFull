@@ -6,7 +6,7 @@ async function loadLocationModule() {
     const area = document.getElementById('contentArea');
 
     try {
-        const dashData = await apiGet('/api/location/admin/').catch(() => null);
+        const dashData = await apiGet('/api/location/dashboard/').catch(() => null);
         const resData = await apiGet('/api/location/reservations/').catch(() => []);
         const ctrData = await apiGet('/api/location/contrats/').catch(() => []);
         const cauData = await apiGet('/api/location/cautions/').catch(() => []);

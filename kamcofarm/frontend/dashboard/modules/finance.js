@@ -7,7 +7,7 @@ async function loadFinanceModule() {
 
     try {
         const [dashboard, factures, devis, paiements, depenses, budgets, categories] = await Promise.all([
-            apiGet('/api/finance/admin/').catch(() => null),
+            apiGet('/api/finance/dashboard/').catch(() => null),
             apiGet('/api/finance/factures/').catch(() => []),
             apiGet('/api/finance/devis/').catch(() => []),
             apiGet('/api/finance/paiements/').catch(() => []),

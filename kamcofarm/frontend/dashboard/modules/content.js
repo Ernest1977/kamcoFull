@@ -6,7 +6,7 @@ async function loadContentModule() {
     const area = document.getElementById('contentArea');
 
     try {
-        const dashData = await apiGet('/api/content/admin/').catch(() => null);
+        const dashData = await apiGet('/api/content/dashboard/').catch(() => null);
         const categoriesData = await apiGet('/api/content/categories/').catch(() => []);
         const pagesData = await apiGet('/api/content/pages/').catch(() => []);
         const documentsData = await apiGet('/api/content/documents/').catch(() => []);
