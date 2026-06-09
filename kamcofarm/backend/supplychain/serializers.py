@@ -175,7 +175,7 @@ class DevisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Devis
         fields = [
-            'id', 'reference', 'client_nom', 'client_entreprise',
+            'id', 'reference', 'token', 'client_nom', 'client_entreprise',
             'client_email', 'client_telephone', 'client_adresse',
             'date_emission', 'date_validite', 'conditions_paiement',
             'delai_livraison', 'port_chargement', 'certifications',
@@ -185,35 +185,63 @@ class DevisSerializer(serializers.ModelSerializer):
             'devise', 'statut', 'statut_display', 'notes',
             'creee_par', 'creee_par_nom', 'date_creation', 'lignes'
         ]
-        read_only_fields = ['reference', 'creee_par', 'creee_par_nom', 'montant_tva', 'montant_ttc']
+        read_only_fields = ['reference', 'token', 'creee_par', 'creee_par_nom', 'montant_tva', 'montant_ttc']
+
+    @staticmethod
+    def _recalculer_montants(devis):
+        """
+        Recalcule les montants du devis de façon centralisée :
+          - sous-total produits (somme des lignes)
+          - + frais de logistique (transport entrepôt -> quai d'embarquement)
+          - + frais d'inspection (SGS / phytosanitaire)
+          = Montant HT
+          - TVA appliquée sur le HT (produits + frais)
+          = Montant TTC
+        """
+        sous_total_produits = sum(float(l.sous_total) for l in devis.lignes.all())
+        frais_log = float(devis.frais_logistique or 0)
+        frais_insp = float(devis.frais_inspection or 0)
+        tva_p = float(devis.tva_pourcentage or 0)
+
+        devis.montant_ht = sous_total_produits + frais_log + frais_insp
+        devis.montant_tva = devis.montant_ht * (tva_p / 100)
+        devis.montant_ttc = devis.montant_ht + devis.montant_tva
+        devis.save(update_fields=['montant_ht', 'montant_tva', 'montant_ttc'])
+        return devis
 
     def create(self, validated_data):
         # On extrait les lignes des données validées pour éviter l'erreur 500
         lignes_data = validated_data.pop('lignes', [])
-        
-        # Sécurisation des frais optionnels s'ils sont absents du dictionnaire
-        frais_insp = float(validated_data.get('frais_inspection', 0) or 0)
-        frais_log = float(validated_data.get('frais_logistique', 0) or 0)
-        tva_p = float(validated_data.get('tva_pourcentage', 0) or 0)
 
         # On récupère l'utilisateur depuis la requête
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
             validated_data['creee_par'] = request.user
 
         # Création de l'objet principal
         devis = Devis.objects.create(**validated_data)
-        
-        total_ht_lignes = 0
+
+        # Création des lignes (sous_total calculé dans LigneDevis.save())
         for data in lignes_data:
-            # On crée la ligne et on calcule le total
-            ligne = LigneDevis.objects.create(devis=devis, **data)
-            total_ht_lignes += float(ligne.sous_total)
-            
-        # Mise à jour finale des montants
-        devis.montant_ht = total_ht_lignes + frais_insp + frais_log
-        devis.montant_tva = devis.montant_ht * (tva_p / 100)
-        devis.montant_ttc = devis.montant_ht + devis.montant_tva
-        devis.save()
-        
-        return devis
+            LigneDevis.objects.create(devis=devis, **data)
+
+        # Calcul final centralisé (produits + frais logistique + inspection, puis TVA)
+        return self._recalculer_montants(devis)
+
+    def update(self, instance, validated_data):
+        # On gère le remplacement des lignes si elles sont fournies
+        lignes_data = validated_data.pop('lignes', None)
+
+        # Mise à jour des champs simples du devis (dont frais_logistique/inspection)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Si de nouvelles lignes sont envoyées, on remplace l'ensemble
+        if lignes_data is not None:
+            instance.lignes.all().delete()
+            for data in lignes_data:
+                LigneDevis.objects.create(devis=instance, **data)
+
+        # Recalcul des montants en incluant systématiquement les frais
+        return self._recalculer_montants(instance)
