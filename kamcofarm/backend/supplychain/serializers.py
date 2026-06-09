@@ -6,7 +6,9 @@ from .models import (
     CommandeFournisseur,
     LigneCommandeFournisseur,
     Livraison,
-    MouvementStock
+    MouvementStock,
+    Devis,
+    LigneDevis
 )
 
 
@@ -154,6 +156,8 @@ class MouvementStockSerializer(serializers.ModelSerializer):
         if obj.commande_fournisseur:
             return obj.commande_fournisseur.reference
         return None
+
+
 # ========================================
 # DEVIS (QUOTATION)
 # ========================================
