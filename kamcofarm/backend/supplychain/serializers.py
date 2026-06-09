@@ -188,17 +188,32 @@ class DevisSerializer(serializers.ModelSerializer):
         read_only_fields = ['reference', 'creee_par', 'creee_par_nom', 'montant_tva', 'montant_ttc']
 
     def create(self, validated_data):
-        lignes_data = self.context.get('request').data.get('lignes', [])
+        # On extrait les lignes des données validées pour éviter l'erreur 500
+        lignes_data = validated_data.pop('lignes', [])
+        
+        # Sécurisation des frais optionnels s'ils sont absents du dictionnaire
+        frais_insp = float(validated_data.get('frais_inspection', 0) or 0)
+        frais_log = float(validated_data.get('frais_logistique', 0) or 0)
+        tva_p = float(validated_data.get('tva_pourcentage', 0) or 0)
+
+        # On récupère l'utilisateur depuis la requête
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['creee_par'] = request.user
+
+        # Création de l'objet principal
         devis = Devis.objects.create(**validated_data)
         
-        total_ht = 0
-        for ligne_data in lignes_data:
-            ligne = LigneDevis.objects.create(devis=devis, **ligne_data)
-            total_ht += float(ligne.sous_total)
+        total_ht_lignes = 0
+        for data in lignes_data:
+            # On crée la ligne et on calcule le total
+            ligne = LigneDevis.objects.create(devis=devis, **data)
+            total_ht_lignes += float(ligne.sous_total)
             
-        devis.montant_ht = total_ht
-        devis.montant_tva = float(total_ht) * (float(devis.tva_pourcentage) / 100)
-        devis.montant_ttc = float(total_ht) + float(devis.montant_tva)
+        # Mise à jour finale des montants
+        devis.montant_ht = total_ht_lignes + frais_insp + frais_log
+        devis.montant_tva = devis.montant_ht * (tva_p / 100)
+        devis.montant_ttc = devis.montant_ht + devis.montant_tva
         devis.save()
         
         return devis
