@@ -149,17 +149,32 @@ def generer_devis_pdf(devis):
 
     elements.append(Spacer(1, 10))
 
-    # Totals
-    totals_data = [
-        ['', '', 'Subtotal:', f'{devis.montant_ht:,.2f} {devis.devise}'],
-        ['', '', f'VAT ({devis.tva_pourcentage}%):', f'{devis.montant_tva:,.2f} {devis.devise}'],
-        ['', '', 'TOTAL:', f'{devis.montant_ttc:,.2f} {devis.devise}'],
+    # Totals — on calcule le sous-total des produits seuls (hors frais)
+    # afin d'afficher chaque composante de manière distincte.
+    sous_total_produits = sum(float(l.sous_total) for l in devis.lignes.all())
+    frais_log = float(devis.frais_logistique or 0)
+    frais_insp = float(devis.frais_inspection or 0)
+
+    totals_rows = [
+        ['', '', 'Subtotal (Products):', f'{sous_total_produits:,.2f} {devis.devise}'],
     ]
-    totals_table = Table(totals_data, colWidths=[7 * cm, 4 * cm, 3 * cm, 3 * cm])
+    if frais_log > 0:
+        totals_rows.append(['', '', 'Logistics (Warehouse>Port):', f'{frais_log:,.2f} {devis.devise}'])
+    if frais_insp > 0:
+        totals_rows.append(['', '', 'Inspection (SGS/Phyto):', f'{frais_insp:,.2f} {devis.devise}'])
+
+    totals_rows.append(['', '', 'Total HT:', f'{devis.montant_ht:,.2f} {devis.devise}'])
+    totals_rows.append(['', '', f'VAT ({devis.tva_pourcentage}%):', f'{devis.montant_tva:,.2f} {devis.devise}'])
+    totals_rows.append(['', '', 'TOTAL TTC:', f'{devis.montant_ttc:,.2f} {devis.devise}'])
+
+    totals_table = Table(totals_rows, colWidths=[6 * cm, 3 * cm, 4.5 * cm, 3.5 * cm])
+    last_row = len(totals_rows) - 1
     totals_table.setStyle(TableStyle([
         ('ALIGN', (2, 0), (-1, -1), 'RIGHT'),
-        ('FONTNAME', (2, 2), (3, 2), 'Helvetica-Bold'),
-        ('TEXTCOLOR', (2, 2), (3, 2), colors.HexColor('#188701')),
+        ('FONTNAME', (2, last_row), (3, last_row), 'Helvetica-Bold'),
+        ('TEXTCOLOR', (2, last_row), (3, last_row), colors.HexColor('#188701')),
+        ('LINEABOVE', (2, last_row), (3, last_row), 0.7, colors.HexColor('#188701')),
+        ('FONTSIZE', (2, 0), (-1, -1), 9),
     ]))
     elements.append(totals_table)
 
@@ -180,14 +195,8 @@ def generer_devis_pdf(devis):
     if devis.conditions_emballage:
         elements.append(Paragraph(f'<b>Packaging:</b> {devis.conditions_emballage}', styles['InfoText']))
 
-    # Export specific fees summary if any
-    if devis.frais_inspection > 0 or devis.frais_logistique > 0:
-        elements.append(Spacer(1, 5))
-        elements.append(Paragraph('ADDITIONAL EXPORT SERVICES', styles['InfoBold']))
-        if devis.frais_inspection > 0:
-            elements.append(Paragraph(f'- Inspection (SGS/Phyto): {formatMoney(devis.frais_inspection, devis.devise)}', styles['InfoText']))
-        if devis.frais_logistique > 0:
-            elements.append(Paragraph(f'- Logistics (Freight/Insurance): {formatMoney(devis.frais_logistique, devis.devise)}', styles['InfoText']))
+    # Note: les frais (logistique / inspection) sont déjà détaillés
+    # dans le tableau des totaux ci-dessus, ligne par ligne.
     
     if devis.notes:
         elements.append(Spacer(1, 10))
@@ -262,3 +271,4 @@ def generer_devis_pdf(devis):
     doc.build(elements)
     buffer.seek(0)
     return buffer
+
