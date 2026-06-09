@@ -355,11 +355,53 @@ class DevisViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creee_par=self.request.user)
 
-    @action(detail=True, methods=['get'])
+    @action(
+        detail=True,
+        methods=['get'],
+        permission_classes=[AllowAny],
+        authentication_classes=[]
+    )
     def pdf(self, request, pk=None):
-        devis = self.get_object()
+        """
+        Télécharge le PDF du devis.
+
+        Deux modes d'accès autorisés :
+          - Par JWT (en-tête Authorization) -> staff interne via le dashboard.
+          - Par le token UUID du devis (?token=...) -> lien public / portail client.
+
+        On évite ainsi l'erreur 401 lorsque le PDF est ouvert dans un nouvel
+        onglet (window.open), car le navigateur n'envoie pas l'en-tête
+        Authorization dans ce cas.
+        """
+        from rest_framework_simplejwt.authentication import JWTAuthentication
+
+        devis = Devis.objects.filter(pk=pk).first()
+        if not devis:
+            return Response({"erreur": "Devis introuvable."}, status=status.HTTP_404_NOT_FOUND)
+
+        autorise = False
+
+        # 1) Accès par le token UUID du devis (lien public)
+        token_param = request.query_params.get('token')
+        if token_param and str(devis.token) == str(token_param):
+            autorise = True
+
+        # 2) Accès par JWT valide dans l'en-tête Authorization (staff interne)
+        if not autorise:
+            try:
+                user_auth = JWTAuthentication().authenticate(request)
+                if user_auth is not None:
+                    autorise = True
+            except Exception:
+                autorise = False
+
+        if not autorise:
+            return Response(
+                {"erreur": "Accès non autorisé à ce document."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
         buffer = generer_devis_pdf(devis)
-        
         response = HttpResponse(buffer, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="Devis_{devis.reference}.pdf"'
         return response
