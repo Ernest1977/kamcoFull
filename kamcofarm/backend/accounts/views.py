@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.decorators import api_view, permission_classes, action, parser_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
@@ -268,6 +268,7 @@ def modifier_mon_profil(request):
 
     user.save()
     return Response(UserSerializer(user, context={'request': request}).data)
+
 
 
 
