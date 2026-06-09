@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMCO FARM — Validation de Devis</title>
+    <style>
+        :root { --primary: #188701; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary); }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; background: #e0e0e0; }
+        .status-ACCEPTE { background: #d4edda; color: #155724; }
+        h1 { margin: 0; font-size: 20px; }
+        .section { margin-bottom: 25px; }
+        .section-title { font-weight: bold; color: var(--primary); text-transform: uppercase; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; background: #f9f9f9; padding: 12px; font-size: 14px; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .totals { margin-left: auto; width: 300px; margin-top: 20px; }
+        .total-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .total-final { border-top: 2px solid var(--primary); font-weight: bold; font-size: 18px; color: var(--primary); padding-top: 10px; }
+        .actions { display: flex; gap: 15px; margin-top: 40px; justify-content: center; }
+        .btn { padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
+        .btn-accept { background: var(--primary); color: white; }
+        .btn-accept:hover { background: #146e01; transform: translateY(-2px); }
+        .btn-refuse { background: #fff; color: #dc3545; border: 1px solid #dc3545; }
+        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #999; }
+        #messageArea { text-align: center; margin-top: 20px; font-weight: bold; }
+        .success-msg { color: var(--primary); background: #d4edda; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container" id="quoteContainer">
+        <div id="loading">Chargement du devis...</div>
+    </div>
+
+    <div class="footer">
+        KAMCO FARM S.A. — AWAE, Yaoundé, Cameroun<br>
+        Besoin d'aide ? Contactez-nous à infoclients@kamcofarm.com
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const API_BASE = window.location.origin;
+
+        async function loadQuote() {
+            if (!token) {
+                document.getElementById('quoteContainer').innerHTML = "<h1>Lien invalide</h1>";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/supplychain/public/devis/${token}/`);
+                if (!response.ok) throw new Error('Devis introuvable');
+                const data = await response.json();
+                renderQuote(data);
+            } catch (error) {
+                document.getElementById('quoteContainer').innerHTML = `<h1>Erreur</h1><p>${error.message}</p>`;
+            }
+        }
+
+        function renderQuote(d) {
+            const container = document.getElementById('quoteContainer');
+            const isAccepted = d.statut === 'ACCEPTE';
+
+            container.innerHTML = `
+                <div class="header">
+                    <div class="logo">🌱 KAMCO FARM</div>
+                    <div class="status-badge status-${d.statut}">${d.statut_display}</div>
+                </div>
+
+                <div class="section">
+                    <h1>PROPOSITION COMMERCIALE #${d.reference}</h1>
+                    <p>Date : ${new Date(d.date_emission).toLocaleDateString()}</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div class="section">
+                        <div class="section-title">Client</div>
+                        <strong>${d.client_nom}</strong><br>
+                        ${d.client_entreprise || ''}<br>
+                        ${d.client_adresse || ''}
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Conditions</div>
+                        Incoterm : ${d.incoterm}<br>
+                        Port : ${d.port_chargement}<br>
+                        Livraison : ${d.delai_livraison || 'À confirmer'}
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Articles</div>
+                    <table>
+                        <thead>
+                            <tr><th>Description</th><th>Qté</th><th>Unité</th><th>Prix Unit.</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            ${d.lignes.map(l => `
+                                <tr>
+                                    <td>${l.description}</td>
+                                    <td>${l.quantite}</td>
+                                    <td>${l.unite}</td>
+                                    <td>${l.prix_unitaire.toLocaleString()}</td>
+                                    <td>${l.sous_total.toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="totals">
+                    <div class="total-row"><span>Sous-total HT</span><span>${d.montant_ht.toLocaleString()} ${d.devise}</span></div>
+                    <div class="total-row"><span>TVA (${d.tva_pourcentage}%)</span><span>${d.montant_tva.toLocaleString()} ${d.devise}</span></div>
+                    <div class="total-row total-final"><span>TOTAL TTC</span><span>${d.montant_ttc.toLocaleString()} ${d.devise}</span></div>
+                </div>
+
+                <div id="actionArea">
+                    ${!isAccepted ? `
+                        <div class="actions">
+                            <button class="btn btn-accept" onclick="acceptQuote()">✅ ACCEPTER CE DEVIS</button>
+                            <button class="btn btn-refuse" onclick="alert('Veuillez nous contacter par email pour toute modification.')">💬 DEMANDER UNE MODIFICATION</button>
+                        </div>
+                    ` : `
+                        <div class="success-msg">
+                            ✅ Ce devis a été accepté. Votre commande est en cours de traitement.
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        async function acceptQuote() {
+            if (!confirm("En acceptant ce devis, vous confirmez votre commande auprès de KAMCO FARM. Continuer ?")) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/supplychain/public/devis/${token}/accepter/`, {
+                    method: 'POST'
+                });
+                const res = await response.json();
+                
+                document.getElementById('actionArea').innerHTML = `
+                    <div class="success-msg">
+                        ${res.message} <br><br> Référence commande : <strong>${res.reference_commande}</strong>
+                    </div>
+                `;
+            } catch (error) {
+                alert("Erreur lors de la validation. Veuillez réessayer.");
+            }
+        }
+
+        loadQuote();
+    </script>
+</body>
+</html>

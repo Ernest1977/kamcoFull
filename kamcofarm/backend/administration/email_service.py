@@ -714,3 +714,57 @@ def envoyer_email_tache_assignee(tache, expediteur=None):
             contenu_html=html
         )
     return False
+# ========================================
+# NOTIFICATION ACCEPTATION DEVIS
+# ========================================
+def notifier_acceptation_devis(devis, reference_commande):
+    """
+    Notifie l'équipe de la validation en ligne d'un devis par un client.
+    """
+    contenu = f"""
+    <p style="color:#333; font-size:15px; line-height:1.8;">
+        Bonne nouvelle ! Un client vient d'accepter une proposition commerciale en ligne.
+    </p>
+    
+    <table width="100%" style="background:#e8f5e9; border-radius:10px; border-left:4px solid #2e7d32; margin:20px 0;">
+        <tr>
+            <td style="padding:20px;">
+                <h3 style="color:#2e7d32; margin:0 0 15px;">✅ Devis Accepté</h3>
+                <table width="100%" style="font-size:14px; color:#555;">
+                    <tr>
+                        <td style="padding:5px 0;"><strong>Client :</strong></td>
+                        <td style="padding:5px 0;">{devis.client_nom}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 0;"><strong>Entreprise :</strong></td>
+                        <td style="padding:5px 0;">{devis.client_entreprise or 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 0;"><strong>Réf. Devis :</strong></td>
+                        <td style="padding:5px 0;">{devis.reference}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 0;"><strong>Réf. Commande :</strong></td>
+                        <td style="padding:5px 0; color:#188701; font-weight:bold;">{reference_commande}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 0;"><strong>Montant :</strong></td>
+                        <td style="padding:5px 0;">{devis.montant_ttc:,.0f} {devis.devise}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <p style="color:#333; font-size:15px; line-height:1.8;">
+        La commande a été générée automatiquement dans le système. Veuillez vérifier les détails logistiques pour lancer la préparation.
+    </p>
+    """
+
+    html = get_base_template("Acceptation de Devis en Ligne", contenu)
+
+    return envoyer_email(
+        destinataire="infoclients@kamcofarm.com",
+        sujet=f"[ACTION REQUISE] Devis {devis.reference} accepté par {devis.client_nom}",
+        contenu_html=html
+    )

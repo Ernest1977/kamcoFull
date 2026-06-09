@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'nom_complet', 'role', 'role_display',
-            'phone', 'department',
+            'phone', 'department', 'signature',
             'is_active', 'is_staff', 'is_superuser',
             'date_joined', 'last_login',
             'a_profil_employe'

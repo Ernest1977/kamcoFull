@@ -253,6 +253,7 @@ def changer_mon_mot_de_passe(request):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def modifier_mon_profil(request):
     """Permet à l'utilisateur de modifier ses informations personnelles."""
     user = request.user
@@ -261,9 +262,12 @@ def modifier_mon_profil(request):
     for champ in champs_modifiables:
         if champ in request.data:
             setattr(user, champ, request.data[champ])
+    
+    if 'signature' in request.FILES:
+        user.signature = request.FILES['signature']
 
     user.save()
-    return Response(UserSerializer(user).data)
+    return Response(UserSerializer(user, context={'request': request}).data)
 
 
 

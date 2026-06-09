@@ -67,6 +67,9 @@ async function loadProfilModule() {
                                 <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${escapeHtml(user.phone || 'N/A')}</span></div>
                                 <div class="detail-row"><span class="detail-label">Rôle</span><span class="detail-value"><span class="badge badge-info">${escapeHtml(user.role_display || user.role)}</span></span></div>
                                 <div class="detail-row"><span class="detail-label">Département</span><span class="detail-value">${escapeHtml(user.department || 'N/A')}</span></div>
+                                <div class="detail-row"><span class="detail-label">Signature</span><span class="detail-value">
+                                    ${user.signature ? `<img src="${user.signature}" style="max-height:50px; border:1px solid var(--border); border-radius:4px;">` : '<span class="badge badge-warning">Non définie</span>'}
+                                </span></div>
                                 <div class="detail-row"><span class="detail-label">Inscription</span><span class="detail-value">${formatDate(user.date_joined)}</span></div>
                                 <div class="detail-row"><span class="detail-label">Dernière connexion</span><span class="detail-value">${user.last_login ? formatDateTime(user.last_login) : 'N/A'}</span></div>
                             </div>
@@ -202,12 +205,18 @@ async function ouvrirModifierProfil() {
     modal.innerHTML = `
         <div style="background:white; border-radius:16px; width:100%; max-width:500px;">
             <div style="padding:1.5rem; border-bottom:1px solid var(--border);"><h3 style="color:var(--primary);">✏️ Modifier mes informations</h3></div>
-            <form id="profilForm" style="padding:1.5rem;">
+            <form id="profilForm" style="padding:1.5rem;" enctype="multipart/form-data">
                 <div class="form-grid">
                     <div class="form-field"><label>Prénom</label><input type="text" id="profilPrenom" value="${escapeHtml(user?.first_name || '')}"></div>
                     <div class="form-field"><label>Nom</label><input type="text" id="profilNom" value="${escapeHtml(user?.last_name || '')}"></div>
                     <div class="form-field"><label>Email</label><input type="email" id="profilEmail" value="${escapeHtml(user?.email || '')}"></div>
                     <div class="form-field"><label>Téléphone</label><input type="text" id="profilPhone" value="${escapeHtml(user?.phone || '')}"></div>
+                    <div class="form-field full-width">
+                        <label>Ma signature numérisée (Image PNG/JPG)</label>
+                        ${user?.signature ? `<img src="${user.signature}" style="max-height:60px; display:block; margin-bottom:0.5rem; border:1px solid #ddd;">` : ''}
+                        <input type="file" id="profilSignature" accept="image/*">
+                        <small style="color:var(--text-light);">Utilisez une image sur fond transparent pour un meilleur rendu.</small>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
@@ -223,15 +232,29 @@ async function ouvrirModifierProfil() {
     document.getElementById('profilForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         try {
-            const payload = {
-                first_name: document.getElementById('profilPrenom')?.value || '',
-                last_name: document.getElementById('profilNom')?.value || '',
-                phone: document.getElementById('profilPhone')?.value || ''
-            };
+            const formData = new FormData();
+            formData.append('first_name', document.getElementById('profilPrenom')?.value || '');
+            formData.append('last_name', document.getElementById('profilNom')?.value || '');
+            formData.append('phone', document.getElementById('profilPhone')?.value || '');
+            
             const email = document.getElementById('profilEmail')?.value?.trim();
-            if (email) payload.email = email;
+            if (email) formData.append('email', email);
+            
+            const signatureFile = document.getElementById('profilSignature')?.files[0];
+            if (signatureFile) {
+                formData.append('signature', signatureFile);
+            }
 
-            const result = await apiPatch('/api/accounts/modifier-profil/', payload);
+            const token = getToken();
+            const response = await fetch(`${API_BASE}/api/accounts/modifier-profil/`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+            
+            const result = await response.json();
             AppState.user = result;
             updateUserUI();
             modal.remove();

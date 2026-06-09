@@ -3,7 +3,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from administration.mixins import TrackingMixin
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
@@ -21,7 +21,9 @@ from .models import (
     CommandeFournisseur,
     LigneCommandeFournisseur,
     Livraison,
-    MouvementStock
+    MouvementStock,
+    Devis,
+    LigneDevis
 )
 
 from .serializers import (
@@ -31,8 +33,17 @@ from .serializers import (
     CommandeFournisseurSerializer,
     LigneCommandeFournisseurSerializer,
     LivraisonSerializer,
-    MouvementStockSerializer
+    MouvementStockSerializer,
+    DevisSerializer,
+    LigneDevisSerializer
 )
+
+from .pdf_generator import generer_devis_pdf
+from django.http import HttpResponse
+from administration.email_service import notifier_acceptation_devis
+from administration.models import Notification
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 
@@ -282,7 +293,7 @@ class MouvementStockViewSet(viewsets.ModelViewSet):
 @permission_classes([IsCommercialeOuLogistique])
 def dashboard_supplychain(request):
     """
-    Vue d'ensemble de la supply chain.
+    Vue d'ensemble de la supply chain incluant stats de conversion devis.
     """
     from django.db.models import Sum, Count
 
@@ -291,18 +302,19 @@ def dashboard_supplychain(request):
     ).count()
 
     commandes_livrees = CommandeClient.objects.filter(statut='LIVREE').count()
-
     livraisons_en_transit = Livraison.objects.filter(statut='EN_TRANSIT').count()
-
     fournisseurs_actifs = Fournisseur.objects.filter(est_actif=True).count()
 
     chiffre_affaires = CommandeClient.objects.filter(
         statut='LIVREE'
     ).aggregate(total=Sum('montant_total'))['total'] or 0
 
-    commandes_par_statut = dict(
-        CommandeClient.objects.values_list('statut').annotate(count=Count('id')).order_by()
-    )
+    # Statistiques de conversion Devis
+    total_devis = Devis.objects.count()
+    devis_acceptes = Devis.objects.filter(statut='ACCEPTE').count()
+    taux_conversion = (devis_acceptes / total_devis * 100) if total_devis > 0 else 0
+    
+    valeur_propositions = Devis.objects.aggregate(total=Sum('montant_ttc'))['total'] or 0
 
     return Response({
         'commandes_en_cours': commandes_en_cours,
@@ -310,5 +322,158 @@ def dashboard_supplychain(request):
         'livraisons_en_transit': livraisons_en_transit,
         'fournisseurs_actifs': fournisseurs_actifs,
         'chiffre_affaires_livrees': float(chiffre_affaires),
-        'commandes_par_statut': commandes_par_statut,
+        'stats_devis': {
+            'total_nombre': total_devis,
+            'acceptes_nombre': devis_acceptes,
+            'taux_conversion': round(taux_conversion, 1),
+            'valeur_totale_proposee': float(valeur_propositions)
+        }
     })
+# ========================================
+# DEVIS (QUOTATION)
+# ========================================
+class DevisViewSet(viewsets.ModelViewSet):
+    """
+    CRUD Devis (Quotations).
+    """
+    queryset = Devis.objects.all()
+    serializer_class = DevisSerializer
+    permission_classes = [IsCommercialeOuLogistique]
+
+    def get_queryset(self):
+        qs = Devis.objects.all()
+        statut = self.request.query_params.get('statut')
+        client = self.request.query_params.get('client')
+
+        if statut:
+            qs = qs.filter(statut=statut.upper())
+        if client:
+            qs = qs.filter(client_nom__icontains=client)
+
+        return qs
+
+    def perform_create(self, serializer):
+        serializer.save(creee_par=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def pdf(self, request, pk=None):
+        devis = self.get_object()
+        buffer = generer_devis_pdf(devis)
+        
+        response = HttpResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Devis_{devis.reference}.pdf"'
+        return response
+
+    @action(detail=True, methods=['post'])
+    def convertir_en_commande(self, request, pk=None):
+        devis = self.get_object()
+        
+        if devis.statut == 'ACCEPTE':
+            return Response({"erreur": "Ce devis a déjà été converti ou accepté."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Création de la commande client
+        commande = CommandeClient.objects.create(
+            client_nom=devis.client_nom,
+            client_entreprise=devis.client_entreprise,
+            client_email=devis.client_email,
+            client_telephone=devis.client_telephone,
+            destination=devis.client_adresse or devis.port_chargement or "À préciser",
+            montant_total=devis.montant_ttc,
+            devise=devis.devise,
+            notes=f"Générée à partir du devis {devis.reference}. {devis.notes or ''}",
+            creee_par=request.user,
+            devis_origine=devis
+        )
+
+        # Création des lignes de commande
+        for ligne_dev in devis.lignes.all():
+            LigneCommandeClient.objects.create(
+                commande=commande,
+                description=ligne_dev.description,
+                quantite_kg=ligne_dev.quantite,
+                prix_unitaire=ligne_dev.prix_unitaire,
+                categorie_ligne='PRODUIT_AGRICOLE' # Par défaut
+            )
+
+        # Mettre à jour le statut du devis
+        devis.statut = 'ACCEPTE'
+        devis.save()
+
+        return Response({
+            "message": "Devis converti avec succès en commande.",
+            "commande_id": commande.id,
+            "commande_reference": commande.reference
+        }, status=status.HTTP_201_CREATED)
+
+# ========================================
+# PORTAIL CLIENT PUBLIC (SÉCURISÉ PAR TOKEN)
+# ========================================
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def public_devis_detail(request, token):
+    try:
+        devis = Devis.objects.get(token=token)
+        serializer = DevisSerializer(devis, context={'request': request})
+        return Response(serializer.data)
+    except Devis.DoesNotExist:
+        return Response({"erreur": "Lien invalide ou expiré."}, status=404)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def public_devis_accepter(request, token):
+    try:
+        devis = Devis.objects.get(token=token)
+        if devis.statut == 'ACCEPTE':
+            return Response({"message": "Ce devis est déjà accepté."})
+        
+        # Logique de conversion (identique à celle du ViewSet)
+        commande = CommandeClient.objects.create(
+            client_nom=devis.client_nom,
+            client_entreprise=devis.client_entreprise,
+            client_email=devis.client_email,
+            client_telephone=devis.client_telephone,
+            destination=devis.client_adresse or devis.port_chargement or "À préciser",
+            montant_total=devis.montant_ttc,
+            devise=devis.devise,
+            notes=f"Accepté en ligne par le client. Réf devis: {devis.reference}.",
+            devis_origine=devis
+        )
+
+        for ligne_dev in devis.lignes.all():
+            LigneCommandeClient.objects.create(
+                commande=commande,
+                description=ligne_dev.description,
+                quantite_kg=ligne_dev.quantite,
+                prix_unitaire=ligne_dev.prix_unitaire,
+                categorie_ligne='PRODUIT_AGRICOLE'
+            )
+
+        devis.statut = 'ACCEPTE'
+        devis.save()
+
+        # 1. Envoi de l'Email de notification
+        try:
+            notifier_acceptation_devis(devis, commande.reference)
+        except Exception as e:
+            print(f"Erreur envoi email notification: {e}")
+
+        # 2. Création des Notifications Push (Système interne)
+        # On notifie tous les administrateurs et commerciaux
+        equipe_a_notifier = User.objects.filter(role__in=['ADMIN', 'DIR', 'COMM'])
+        for staff in equipe_a_notifier:
+            Notification.objects.create(
+                destinataire=staff,
+                titre="✅ Devis accepté en ligne !",
+                message=f"Le client {devis.client_nom} a accepté le devis {devis.reference}. Commande {commande.reference} générée.",
+                type_notification='SUCCESS',
+                priorite='HAUTE',
+                lien_module='supplychain',
+                lien_url=f"/api/supplychain/commandes-clients/{commande.id}/"
+            )
+
+        return Response({
+            "message": "Devis accepté avec succès ! Nous préparons votre commande.",
+            "reference_commande": commande.reference
+        })
+    except Devis.DoesNotExist:
+        return Response({"erreur": "Lien invalide."}, status=404)

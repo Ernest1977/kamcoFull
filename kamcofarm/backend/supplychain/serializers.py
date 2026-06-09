@@ -154,3 +154,47 @@ class MouvementStockSerializer(serializers.ModelSerializer):
         if obj.commande_fournisseur:
             return obj.commande_fournisseur.reference
         return None
+# ========================================
+# DEVIS (QUOTATION)
+# ========================================
+class LigneDevisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LigneDevis
+        fields = ['id', 'description', 'quantite', 'unite', 'prix_unitaire', 'sous_total']
+        read_only_fields = ['sous_total']
+
+class DevisSerializer(serializers.ModelSerializer):
+    lignes = LigneDevisSerializer(many=True, required=False)
+    statut_display = serializers.CharField(source='get_statut_display', read_only=True)
+    creee_par_nom = serializers.CharField(source='creee_par.username', read_only=True)
+
+    class Meta:
+        model = Devis
+        fields = [
+            'id', 'reference', 'client_nom', 'client_entreprise',
+            'client_email', 'client_telephone', 'client_adresse',
+            'date_emission', 'date_validite', 'conditions_paiement',
+            'delai_livraison', 'port_chargement', 'certifications',
+            'conditions_emballage', 'incoterm', 'frais_inspection',
+            'frais_logistique', 'montant_ht',
+            'tva_pourcentage', 'montant_tva', 'montant_ttc',
+            'devise', 'statut', 'statut_display', 'notes',
+            'creee_par', 'creee_par_nom', 'date_creation', 'lignes'
+        ]
+        read_only_fields = ['reference', 'creee_par', 'creee_par_nom', 'montant_tva', 'montant_ttc']
+
+    def create(self, validated_data):
+        lignes_data = self.context.get('request').data.get('lignes', [])
+        devis = Devis.objects.create(**validated_data)
+        
+        total_ht = 0
+        for ligne_data in lignes_data:
+            ligne = LigneDevis.objects.create(devis=devis, **ligne_data)
+            total_ht += float(ligne.sous_total)
+            
+        devis.montant_ht = total_ht
+        devis.montant_tva = float(total_ht) * (float(devis.tva_pourcentage) / 100)
+        devis.montant_ttc = float(total_ht) + float(devis.montant_tva)
+        devis.save()
+        
+        return devis

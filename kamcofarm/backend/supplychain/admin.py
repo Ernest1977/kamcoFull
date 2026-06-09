@@ -8,7 +8,9 @@ from .models import (
     CommandeFournisseur,
     LigneCommandeFournisseur,
     Livraison,
-    MouvementStock
+    MouvementStock,
+    Devis,
+    LigneDevis
 )
 
 
@@ -109,3 +111,21 @@ class MouvementStockAdmin(admin.ModelAdmin):
     list_filter = ('type_mouvement',)
     search_fields = ('produit__nom', 'motif')
     ordering = ('-date_mouvement',)
+# ========================================
+# DEVIS (QUOTATION)
+# ========================================
+class LigneDevisInline(admin.TabularInline):
+    model = LigneDevis
+    extra = 1
+    readonly_fields = ('sous_total',)
+
+@admin.register(Devis)
+class DevisAdmin(admin.ModelAdmin):
+    list_display = (
+        'reference', 'client_nom', 'client_entreprise',
+        'statut', 'montant_ttc', 'devise', 'date_emission'
+    )
+    list_filter = ('statut', 'devise')
+    search_fields = ('reference', 'client_nom', 'client_entreprise')
+    readonly_fields = ('reference', 'montant_tva', 'montant_ttc')
+    inlines = [LigneDevisInline]

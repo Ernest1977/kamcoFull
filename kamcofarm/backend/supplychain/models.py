@@ -72,6 +72,13 @@ class CommandeClient(models.Model):
         related_name='commandes_creees'
     )
 
+    devis_origine = models.ForeignKey(
+        'Devis',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='commandes_generees'
+    )
+
     def save(self, *args, **kwargs):
         if not self.reference:
             self.reference = f"CMD-{uuid.uuid4().hex[:8].upper()}"
@@ -326,3 +333,132 @@ class MouvementStock(models.Model):
         ordering = ['-date_mouvement']
         verbose_name = "Mouvement de stock"
         verbose_name_plural = "Mouvements de stock"
+# ========================================
+# DEVIS (QUOTATION)
+# ========================================
+class Devis(models.Model):
+    STATUT_CHOICES = [
+        ('BROUILLON', 'Brouillon'),
+        ('ENVOYE', 'Envoyé'),
+        ('ACCEPTE', 'Accepté'),
+        ('REFUSE', 'Refusé'),
+        ('EXPIRE', 'Expiré'),
+    ]
+
+    DEVISE_CHOICES = [
+        ('FCFA', 'Franc CFA'),
+        ('EUR', 'Euro'),
+        ('USD', 'Dollar US'),
+    ]
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    INCOTERM_CHOICES = [
+        ('EXW', 'EXW - Ex Works'),
+        ('FCA', 'FCA - Free Carrier'),
+        ('FAS', 'FAS - Free Alongside Ship'),
+        ('FOB', 'FOB - Free On Board'),
+        ('CFR', 'CFR - Cost and Freight'),
+        ('CIF', 'CIF - Cost, Insurance and Freight'),
+        ('CPT', 'CPT - Carriage Paid To'),
+        ('CIP', 'CIP - Carriage and Insurance Paid To'),
+        ('DAP', 'DAP - Delivered At Place'),
+        ('DPU', 'DPU - Delivered at Place Unloaded'),
+        ('DDP', 'DDP - Delivered Duty Paid'),
+    ]
+
+    reference = models.CharField(max_length=50, unique=True, editable=False)
+    
+    # Infos Client/Lead
+    client_nom = models.CharField(max_length=255)
+    client_entreprise = models.CharField(max_length=255, blank=True, null=True)
+    client_email = models.EmailField(blank=True, null=True)
+    client_telephone = models.CharField(max_length=50, blank=True, null=True)
+    client_adresse = models.TextField(blank=True, null=True)
+
+    # Détails Devis
+    date_emission = models.DateField()
+    date_validite = models.DateField(blank=True, null=True)
+    
+    # Conditions
+    conditions_paiement = models.TextField(blank=True, null=True)
+    delai_livraison = models.CharField(max_length=100, blank=True, null=True)
+    port_chargement = models.CharField(max_length=100, blank=True, null=True, default="Douala, Cameroun")
+    
+    # Nouveaux champs facultatifs
+    certifications = models.CharField(max_length=255, blank=True, null=True, help_text="Ex: GLOBALG.A.P., Bio, etc.")
+    conditions_emballage = models.TextField(blank=True, null=True, help_text="Ex: Cartons de 4kg, vrac, etc.")
+    incoterm = models.CharField(max_length=10, choices=INCOTERM_CHOICES, default='FOB')
+    
+    # Frais d'exportation (Optionnels)
+    frais_inspection = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="SGS, Phytosanitaire...")
+    frais_logistique = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Fret, Assurance...")
+    
+    montant_ht = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    tva_pourcentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    montant_tva = models.DecimalField(max_digits=14, decimal_places=2, default=0, editable=False)
+    montant_ttc = models.DecimalField(max_digits=14, decimal_places=2, default=0, editable=False)
+    
+    devise = models.CharField(max_length=10, choices=DEVISE_CHOICES, default='FCFA')
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='BROUILLON')
+    
+    notes = models.TextField(blank=True, null=True)
+    
+    creee_par = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='devis_creees'
+    )
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.reference:
+            self.reference = f"DEV-{uuid.uuid4().hex[:8].upper()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.reference} - {self.client_nom}"
+
+    class Meta:
+        ordering = ['-date_creation']
+        verbose_name = "Devis"
+        verbose_name_plural = "Devis"
+
+
+class LigneDevis(models.Model):
+    devis = models.ForeignKey(
+        Devis,
+        on_delete=models.CASCADE,
+        related_name='lignes'
+    )
+    description = models.CharField(max_length=500)
+    quantite = models.DecimalField(max_digits=10, decimal_places=2)
+    unite = models.CharField(max_length=20, default='kg')
+    prix_unitaire = models.DecimalField(max_digits=14, decimal_places=2)
+    sous_total = models.DecimalField(max_digits=14, decimal_places=2, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.sous_total = float(self.quantite) * float(self.prix_unitaire)
+        super().save(*args, **kwargs)
+        
+        # Recalculer le total du devis
+        devis = self.devis
+        total_ht = sum(float(l.sous_total) for l in devis.lignes.all())
+        
+        # Ajouter les frais annexes au HT pour le calcul de la TVA si nécessaire, 
+        # ou les garder séparés. Ici on les inclut dans le HT global du document.
+        frais_annexes = float(devis.frais_inspection or 0) + float(devis.frais_logistique or 0)
+        
+        devis.montant_ht = total_ht + frais_annexes
+        devis.montant_tva = float(devis.montant_ht) * (float(devis.tva_pourcentage) / 100)
+        devis.montant_ttc = float(devis.montant_ht) + float(devis.montant_tva)
+        
+        Devis.objects.filter(id=devis.id).update(
+            montant_ht=devis.montant_ht,
+            montant_tva=devis.montant_tva,
+            montant_ttc=devis.montant_ttc
+        )
+
+    def __str__(self):
+        return f"{self.description} ({self.devis.reference})"
