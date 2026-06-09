@@ -416,3 +416,4 @@ function renderSCAchats() { return "<h4>Liste des Achats</h4>"; }
 function renderSCFournisseurs() { return "<h4>Fournisseurs</h4>"; }
 function renderSCLivraisons() { return "<h4>Livraisons</h4>"; }
 function renderSCStock() { return "<h4>Stocks</h4>"; }
+
