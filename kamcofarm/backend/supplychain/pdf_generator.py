@@ -94,7 +94,7 @@ def generer_devis_pdf(devis):
         Spacer(1, 4),
         Paragraph('AWAE- Yaoundé, Cameroun', styles['InfoText']),
         Paragraph('📞 +237 6 94 57 20 50', styles['InfoText']),
-        Paragraph('✉️ sales@kamcofarm.com', styles['InfoText']),
+        Paragraph('✉️ infoclients@kamcofarm.com', styles['InfoText']),
     ])
 
     right_column = [
@@ -271,4 +271,3 @@ def generer_devis_pdf(devis):
     doc.build(elements)
     buffer.seek(0)
     return buffer
-
