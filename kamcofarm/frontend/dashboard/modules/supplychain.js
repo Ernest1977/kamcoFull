@@ -356,9 +356,18 @@ async function ouvrirFormulaireSCDevis() {
         try {
             await apiPost('/api/supplychain/devis/', payload);
             modal.remove();
+            // On rafraîchit d'abord le module pour que le nouveau devis
+            // apparaisse immédiatement dans l'onglet Devis/Leads...
+            await navigateTo('supplychain');
+            // ...on bascule automatiquement sur l'onglet Devis/Leads...
+            const devisTabBtn = Array.from(document.querySelectorAll('.tab-btn'))
+                .find(b => /Devis\/Leads/i.test(b.textContent));
+            if (devisTabBtn) switchTab('sc', 'devis', devisTabBtn);
+            // ...puis on affiche la confirmation.
             showSuccess("Devis généré avec succès !");
-            navigateTo('supplychain');
-        } catch (error) { alert(error.message); }
+        } catch (error) {
+            showError(error.message || "Erreur lors de la génération du devis.");
+        }
     };
 }
 
@@ -416,4 +425,3 @@ function renderSCAchats() { return "<h4>Liste des Achats</h4>"; }
 function renderSCFournisseurs() { return "<h4>Fournisseurs</h4>"; }
 function renderSCLivraisons() { return "<h4>Livraisons</h4>"; }
 function renderSCStock() { return "<h4>Stocks</h4>"; }
-
