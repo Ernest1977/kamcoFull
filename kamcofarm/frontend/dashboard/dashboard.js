@@ -1,5 +1,5 @@
 // ========================================
-// KAMCOFARM — Dashboard Admin
+// KAMCO FARM — Dashboard Admin
 // Fichier principal : Auth, Navigation, Notifications
 // ========================================
 
