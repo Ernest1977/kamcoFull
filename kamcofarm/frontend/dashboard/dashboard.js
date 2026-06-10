@@ -1,5 +1,5 @@
 // ========================================
-// FOSS AGRO FARM — Dashboard Admin
+// KAMCOFARM — Dashboard Admin
 // Fichier principal : Auth, Navigation, Notifications
 // ========================================
 
@@ -111,15 +111,74 @@ function showLoading() {
     }
 }
 
+// ========================================
+// NOTIFICATIONS (TOASTS)
+// ========================================
+function _ensureToastContainer() {
+    let c = document.getElementById('toastContainer');
+    if (!c) {
+        c = document.createElement('div');
+        c.id = 'toastContainer';
+        c.style.cssText = 'position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; max-width:360px;';
+        document.body.appendChild(c);
+    }
+    return c;
+}
+
+function showToast(message, type = 'success') {
+    const container = _ensureToastContainer();
+    const colors = {
+        success: { bg: '#188701', icon: '✅' },
+        error:   { bg: '#dc3545', icon: '❌' },
+        info:    { bg: '#0d6efd', icon: 'ℹ️' }
+    };
+    const conf = colors[type] || colors.info;
+
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        background:${conf.bg}; color:#fff; padding:14px 18px; border-radius:10px;
+        box-shadow:0 6px 20px rgba(0,0,0,0.18); display:flex; align-items:center; gap:10px;
+        font-size:0.92rem; font-weight:500; opacity:0; transform:translateX(40px);
+        transition:opacity .25s ease, transform .25s ease;`;
+    toast.innerHTML = `<span style="font-size:1.1rem;">${conf.icon}</span><span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+
+    // Animation d'entrée
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+    });
+
+    // Disparition automatique
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+function showSuccess(message) {
+    showToast(message, 'success');
+}
+
 function showError(message) {
+    // Toast d'erreur (cohérent avec showSuccess)
+    showToast(message, 'error');
+
+    // Repli : si la zone de contenu est vide ou en chargement (échec de
+    // chargement d'un module), on y affiche aussi l'erreur pour ne pas
+    // laisser un écran blanc.
     const area = document.getElementById('contentArea');
     if (area) {
-        area.innerHTML = `
-            <div class="alert alert-danger">
-                <span>❌</span>
-                <span>${escapeHtml(message)}</span>
-            </div>
-        `;
+        const txt = area.textContent || '';
+        if (area.children.length === 0 || txt.includes('Chargement')) {
+            area.innerHTML = `
+                <div class="alert alert-danger">
+                    <span>❌</span>
+                    <span>${escapeHtml(message)}</span>
+                </div>
+            `;
+        }
     }
 }
 
