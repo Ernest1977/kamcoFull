@@ -92,7 +92,7 @@ def generer_devis_pdf(devis):
 
     left_column.extend([
         Spacer(1, 4),
-        Paragraph('AWAE- Yaoundé, Cameroun', styles['InfoText']),
+        Paragraph('Douala, Cameroun', styles['InfoText']),
         Paragraph('📞 +237 6 94 57 20 50', styles['InfoText']),
         Paragraph('✉️ infoclients@kamcofarm.com', styles['InfoText']),
     ])
@@ -258,7 +258,7 @@ def generer_devis_pdf(devis):
         ['', Paragraph('<b>Authorized Signature</b>', styles['InfoBold'])],
         ['', signature_element if signature_element else Spacer(1, 2 * cm)],
         ['', Paragraph(f'<b>{manager_name}</b>', styles['InfoText'])],
-        ['', Paragraph('KAMCO FARM S.A.', styles['InfoText'])]
+        ['', Paragraph('KAMCO FARM Sarl', styles['InfoText'])]
     ]
     
     sig_table = Table(sig_data, colWidths=[10 * cm, 7 * cm])

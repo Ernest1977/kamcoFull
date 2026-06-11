@@ -372,9 +372,9 @@ nav {
     color: var(--primary-green);
 }
 
-/* Image Hero — centrée en haut, 40% de la largeur de la section */
+/* Image Hero — centrée en haut, 60% de la largeur de la section */
 .hero-image {
-    width: 40%;
+    width: 60%;
     max-width: 100%;
     margin: 0 auto 2rem;   /* centrée horizontalement + espace sous l'image */
     display: flex;
