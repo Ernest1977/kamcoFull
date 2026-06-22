@@ -539,6 +539,10 @@ async function loadPartners() {
     const track = document.getElementById('partnersTrack');
     if (!track) return;
 
+    // On mémorise les logos statiques (en dur dans index.html) comme solution
+    // de repli : ils restent affichés si l'API est vide ou en erreur.
+    const fallbackHTML = track.innerHTML;
+
     try {
         const response = await fetch(`${API_BASE}/api/partners/`, {
             headers: {
@@ -549,23 +553,29 @@ async function loadPartners() {
 
         if (!response.ok) throw new Error(`Erreur API ${response.status}`);
 
-        const partners = await response.json();
-        track.innerHTML = '';
+        const data = await response.json();
+        // Gère à la fois une liste simple et une réponse paginée { results: [...] }
+        const partners = Array.isArray(data) ? data : (data.results || []);
 
+        // Si aucun partenaire en base, on garde les logos statiques de repli.
         if (!partners.length) {
-            track.innerHTML = `<p style="padding:2rem; text-align:center;">Aucun partenaire disponible.</p>`;
+            track.innerHTML = fallbackHTML;
+            initCarousel('partnersTrack');
             return;
         }
 
+        // Des partenaires existent en base : ils prennent le relais.
+        track.innerHTML = '';
         partners.forEach(partner => {
             const card = document.createElement('div');
             card.className = 'carousel-item partner-logo';
 
             const website = partner.site_web ? `onclick="window.open('${partner.site_web}', '_blank')"` : '';
+            const logoSrc = partner.logo_url || partner.logo || 'images/placeholder.png';
 
             card.innerHTML = `
                 <span ${website}>
-                    <img src="${partner.logo}" alt="${escapeHtml(partner.nom)}" loading="lazy"
+                    <img src="${logoSrc}" alt="${escapeHtml(partner.nom)}" loading="lazy"
                          onerror="this.onerror=null;this.src='images/placeholder.png';">
                 </span>
                 <p>${escapeHtml(partner.nom)}</p>
@@ -577,7 +587,10 @@ async function loadPartners() {
         initCarousel('partnersTrack');
     } catch (error) {
         console.error('Erreur partenaires:', error);
-        track.innerHTML = `<p style="padding:2rem; text-align:center; color:red;">Erreur de chargement des partenaires.</p>`;
+        // En cas d'erreur API, on restaure les logos statiques plutôt que
+        // d'afficher un message d'erreur rouge à la place de la section.
+        track.innerHTML = fallbackHTML;
+        initCarousel('partnersTrack');
     }
 }
 
