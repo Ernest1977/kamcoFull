@@ -303,7 +303,7 @@ function changeLanguage(lang) {
     loadPartners();
     loadBlogPosts();
     loadTestimonials();
-    loadStatistics();
+    loadStatistiq();
 }
 
 function initLanguageDropdown() {
