@@ -715,6 +715,10 @@ async function loadStatistiq() {
     const statsGrid = document.getElementById('statsGrid');
     if (!statsGrid) return;
 
+    // On mémorise les statistiques statiques (en dur dans index.html) comme
+    // solution de repli : elles restent affichées si l'API est vide ou en erreur.
+    const fallbackHTML = statsGrid.innerHTML;
+
     try {
         const response = await fetch(`${API_BASE}/api/statistiq/`, {
             headers: {
@@ -725,14 +729,18 @@ async function loadStatistiq() {
 
         if (!response.ok) throw new Error(`Erreur API ${response.status}`);
 
-        const stats = await response.json();
-        statsGrid.innerHTML = '';
+        const data = await response.json();
+        const stats = Array.isArray(data) ? data : (data.results || []);
 
+        // Si aucune statistique en base, on garde les valeurs statiques de repli.
         if (!stats.length) {
-            statsGrid.innerHTML = `<p style="text-align:center; width:100%; color:white;">Aucune statistique disponible.</p>`;
+            statsGrid.innerHTML = fallbackHTML;
+            animateStatsOnView();
             return;
         }
 
+        // Des statistiques existent en base : elles prennent le relais.
+        statsGrid.innerHTML = '';
         stats.forEach(stat => {
             const item = document.createElement('div');
             item.className = 'stat-item';
@@ -748,7 +756,10 @@ async function loadStatistiq() {
         animateStatsOnView();
     } catch (error) {
         console.error('Erreur statistiques:', error);
-        statsGrid.innerHTML = `<p style="text-align:center; width:100%; color:red;">Erreur de chargement des statistiques.</p>`;
+        // En cas d'erreur API, on restaure les statistiques statiques plutôt
+        // que d'afficher un message d'erreur rouge.
+        statsGrid.innerHTML = fallbackHTML;
+        animateStatsOnView();
     }
 }
 
@@ -860,9 +871,14 @@ function initHeaderEffects() {
 // ANIMATIONS AU SCROLL
 // ========================================
 function initScrollAnimations() {
-    const animatedElements = document.querySelectorAll(
-        '.feature-card, .product-card, .service-card, .blog-card, .testimonial-card, .gallery-item, .partner-logo, .stat-item'
-    );
+    // IMPORTANT : on EXCLUT les éléments des carrousels (.partner-logo,
+    // .gallery-item) de cette animation au scroll. Sinon ils sont mis à
+    // opacity:0 en attendant d'entrer dans le viewport, mais comme ils sont
+    // dans un carrousel (défilement horizontal, souvent hors écran au départ),
+    // ils restaient invisibles -> logos partenaires qui "disparaissaient".
+    const selector = '.feature-card, .product-card, .service-card, .blog-card, .testimonial-card, .stat-item';
+
+    const animatedElements = document.querySelectorAll(selector);
 
     animatedElements.forEach(element => {
         element.style.opacity = '0';
@@ -871,9 +887,7 @@ function initScrollAnimations() {
     });
 
     const animateOnScroll = () => {
-        document.querySelectorAll(
-            '.feature-card, .product-card, .service-card, .blog-card, .testimonial-card, .gallery-item, .partner-logo, .stat-item'
-        ).forEach(element => {
+        document.querySelectorAll(selector).forEach(element => {
             const rect = element.getBoundingClientRect();
             if (rect.top < window.innerHeight - 50) {
                 element.style.opacity = '1';
@@ -1199,13 +1213,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     changeLanguage(currentLanguage);
 
-    // contenus dynamiques
-    loadProducts();
-    loadGallery();
-    loadPartners();
-    loadBlogPosts();
-    loadTestimonials();
-    loadStatistiq();
+    // NB : changeLanguage() déclenche déjà le chargement des contenus
+    // dynamiques (loadProducts, loadGallery, loadPartners, loadBlogPosts,
+    // loadTestimonials, loadStatistiq). On ne les rappelle donc PAS ici,
+    // pour éviter un double chargement concurrent qui faisait clignoter
+    // puis disparaître les logos/cartes.
 
     setTimeout(() => {
         initScrollAnimations();
