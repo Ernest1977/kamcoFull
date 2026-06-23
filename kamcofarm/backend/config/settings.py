@@ -266,6 +266,16 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.kamcofarm.com',
 ]
 
+# ============================================================
+# PROXY / HTTPS
+# Derrière nginx (qui transmet 'X-Forwarded-Proto: https'), on indique à
+# Django que la requête d'origine est sécurisée. Sans ceci,
+# request.build_absolute_uri() génère des URLs en http:// -> erreurs
+# "Mixed Content" sur le site HTTPS (logos partenaires, images, etc.).
+# ============================================================
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),

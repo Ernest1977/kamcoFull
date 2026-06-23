@@ -35,7 +35,13 @@ class PartenaireSerializer(serializers.ModelSerializer):
     def get_logo_url(self, obj):
         request = self.context.get('request')
         if obj.logo and request:
-            return request.build_absolute_uri(obj.logo.url)
+            url = request.build_absolute_uri(obj.logo.url)
+            # Filet de sécurité anti "Mixed Content" : si la requête arrive
+            # via un proxy HTTPS (en-tête X-Forwarded-Proto), on force https://
+            forwarded_proto = request.META.get('HTTP_X_FORWARDED_PROTO', '')
+            if forwarded_proto == 'https' and url.startswith('http://'):
+                url = 'https://' + url[len('http://'):]
+            return url
         return None
 
     def get_localisation(self, obj):
