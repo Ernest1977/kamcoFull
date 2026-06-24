@@ -588,20 +588,21 @@ async function loadPartners() {
         }
 
         // Des partenaires existent en base : ils prennent le relais.
+        // Structure calquée sur les autres carrousels qui fonctionnent.
         track.innerHTML = '';
         partners.forEach(partner => {
             const card = document.createElement('div');
-            card.className = 'carousel-item partner-logo';
+            card.className = 'carousel-item partner-card';
 
-            const website = partner.site_web ? `onclick="window.open('${partner.site_web}', '_blank')"` : '';
             const logoSrc = safeMediaUrl(partner.logo_url || partner.logo) || 'images/placeholder.png';
+            const clickAttr = partner.site_web ? `onclick="window.open('${partner.site_web}', '_blank')" style="cursor:pointer;"` : '';
 
             card.innerHTML = `
-                <span ${website}>
+                <div class="partner-card-inner" ${clickAttr}>
                     <img src="${logoSrc}" alt="${escapeHtml(partner.nom)}"
                          onerror="this.onerror=null;this.src='images/placeholder.png';">
-                </span>
-                <p>${escapeHtml(partner.nom)}</p>
+                    <p>${escapeHtml(partner.nom)}</p>
+                </div>
             `;
 
             track.appendChild(card);
