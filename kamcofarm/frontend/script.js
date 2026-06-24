@@ -766,19 +766,45 @@ async function loadStatistiq() {
 let statsAnimated = false;
 function animateStatsOnView() {
     const statsSection = document.querySelector('.stats');
-    if (!statsSection || statsAnimated) return;
+    if (!statsSection) return;
+
+    // On (ré)autorise l'animation à chaque appel, car loadStatistiq peut
+    // reconstruire les cartes (le contenu a changé).
+    statsAnimated = false;
 
     const statNumbers = statsSection.querySelectorAll('.stat-item h3');
+
+    // Détermine la valeur finale de façon robuste : on lit data-value, et à
+    // défaut on extrait le nombre déjà affiché dans le <h3> (ex: "78+").
+    const resolveFinal = (el) => {
+        let v = el.dataset.value;
+        if (v === undefined || v === '' || isNaN(parseInt(v, 10))) {
+            const m = (el.textContent || '').match(/\d+/);
+            v = m ? m[0] : '0';
+        }
+        return parseInt(v, 10) || 0;
+    };
+    const resolveSuffix = (el) => {
+        if (el.dataset.suffix) return el.dataset.suffix;
+        const m = (el.textContent || '').match(/[^\d\s]+$/);
+        return m ? m[0] : '+';
+    };
 
     const runAnimation = () => {
         if (statsAnimated) return;
         statsAnimated = true;
 
         statNumbers.forEach((el) => {
-            const finalValue = parseInt(el.dataset.value || '0', 10);
-            const suffix = el.dataset.suffix || '+';
-            let start = 0;
+            const finalValue = resolveFinal(el);
+            const suffix = resolveSuffix(el);
 
+            // Sécurité : si la valeur finale est 0, on n'anime pas (on laisse
+            // l'affichage tel quel) pour ne jamais "écraser" en 0.
+            if (finalValue <= 0) {
+                return;
+            }
+
+            let start = 0;
             const duration = 1500;
             const increment = Math.max(1, Math.ceil(finalValue / (duration / 30)));
 
@@ -792,6 +818,13 @@ function animateStatsOnView() {
             }, 30);
         });
     };
+
+    // Si la section est déjà visible au chargement, on anime tout de suite.
+    const rect = statsSection.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+        runAnimation();
+        return;
+    }
 
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
