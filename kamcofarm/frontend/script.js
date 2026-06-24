@@ -535,6 +535,29 @@ async function loadGallery() {
 // ========================================
 // CHARGEMENT PARTNERS
 // ========================================
+// Force une URL d'image média à utiliser le MÊME protocole/hôte que la page
+// courante. Cela neutralise les erreurs "Mixed Content" (image http:// sur
+// une page https://) même si le backend renvoie encore une URL en http://.
+function safeMediaUrl(url) {
+    if (!url) return url;
+    try {
+        // URL relative (ex: /media/...) -> on la laisse telle quelle
+        if (url.startsWith('/')) return url;
+        const u = new URL(url, window.location.origin);
+        // On ne réécrit que les liens vers notre propre média, pas les CDN externes
+        if (u.hostname === window.location.hostname) {
+            return u.pathname + u.search;  // chemin relatif same-origin (toujours https)
+        }
+        // Hôte externe : on aligne au moins le protocole sur celui de la page
+        if (window.location.protocol === 'https:' && u.protocol === 'http:') {
+            u.protocol = 'https:';
+        }
+        return u.toString();
+    } catch (e) {
+        return url;
+    }
+}
+
 async function loadPartners() {
     const track = document.getElementById('partnersTrack');
     if (!track) return;
@@ -571,7 +594,7 @@ async function loadPartners() {
             card.className = 'carousel-item partner-logo';
 
             const website = partner.site_web ? `onclick="window.open('${partner.site_web}', '_blank')"` : '';
-            const logoSrc = partner.logo_url || partner.logo || 'images/placeholder.png';
+            const logoSrc = safeMediaUrl(partner.logo_url || partner.logo) || 'images/placeholder.png';
 
             card.innerHTML = `
                 <span ${website}>
