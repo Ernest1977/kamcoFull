@@ -598,7 +598,7 @@ async function loadPartners() {
 
             card.innerHTML = `
                 <span ${website}>
-                    <img src="${logoSrc}" alt="${escapeHtml(partner.nom)}" loading="lazy"
+                    <img src="${logoSrc}" alt="${escapeHtml(partner.nom)}"
                          onerror="this.onerror=null;this.src='images/placeholder.png';">
                 </span>
                 <p>${escapeHtml(partner.nom)}</p>

@@ -372,9 +372,9 @@ nav {
     color: var(--primary-green);
 }
 
-/* Image Hero — centrée en haut, 60% de la largeur de la section */
+/* Image Hero — centrée en haut, 40% de la largeur de la section */
 .hero-image {
-    width: 60%;
+    width: 65%;
     max-width: 100%;
     margin: 0 auto 2rem;   /* centrée horizontalement + espace sous l'image */
     display: flex;
@@ -865,6 +865,16 @@ nav {
     max-height: 70px;
     object-fit: contain;
     margin-bottom: 0.8rem;
+}
+
+/* Sécurité : les logos partenaires (dans un carrousel) ne doivent JAMAIS
+   être masqués par une animation au scroll ou une intervention du navigateur.
+   On force leur visibilité. */
+.partners-carousel .partner-logo,
+.partner-logo,
+.partner-logo img {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 /* TESTIMONIALS */
