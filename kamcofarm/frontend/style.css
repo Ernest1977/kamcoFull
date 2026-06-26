@@ -665,7 +665,7 @@ nav {
     margin-top: 3rem;
 }
 
-.partner-logo {
+.partner-card {
     width: 155px;
     height: 155px;
     background: var(--light-bg);
@@ -679,13 +679,13 @@ nav {
     cursor: pointer;
 }
 
-.partner-logo img {
+.partner-card img {
     max-width: 80%;
     max-height: 80%;
     object-fit: contain;
 }
 
-.partner-logo:hover {
+.partner-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
