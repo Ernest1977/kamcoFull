@@ -1793,7 +1793,16 @@ function ouvrirFormulaireCreation(type) {
                 }
 
                 if (hasFile) {
-                    formData.append('image', fileInput.files[0]);
+                    // Le nom du champ fichier dépend du modèle backend :
+                    // - Partenaire     -> 'logo'
+                    // - Témoignage     -> 'photo'
+                    // - produit/gallery/blog -> 'image'
+                    const fileFieldByType = {
+                        partner: 'logo',
+                        testimonial: 'photo'
+                    };
+                    const fileField = fileFieldByType[type] || 'image';
+                    formData.append(fileField, fileInput.files[0]);
                 }
 
                 await uploadImage(endpoint, formData);
