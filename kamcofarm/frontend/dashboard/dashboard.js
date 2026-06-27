@@ -1,5 +1,5 @@
 // ========================================
-// KAMCO FARM — Dashboard Admin
+// FOSS AGRO FARM — Dashboard Admin
 // Fichier principal : Auth, Navigation, Notifications
 // ========================================
 
@@ -2342,7 +2342,14 @@ function ouvrirModalEdition(type, data, endpoint, moduleRedirect) {
                 }
 
                 if (fileInput && fileInput.files.length > 0) {
-                    formData.append('image', fileInput.files[0]);
+                    // Même règle qu'à la création : le nom du champ fichier
+                    // dépend du modèle (partner->logo, testimonial->photo, sinon image).
+                    const fileFieldByType = {
+                        partner: 'logo',
+                        testimonial: 'photo'
+                    };
+                    const fileField = fileFieldByType[type] || 'image';
+                    formData.append(fileField, fileInput.files[0]);
                 }
 
                 await uploadImageUpdate(endpoint, formData);
