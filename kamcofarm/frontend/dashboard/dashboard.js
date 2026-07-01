@@ -1,5 +1,5 @@
 // ========================================
-// FOSS AGRO FARM — Dashboard Admin
+// KAMCO FARM — Dashboard Admin
 // Fichier principal : Auth, Navigation, Notifications
 // ========================================
 
@@ -1733,8 +1733,17 @@ function ouvrirFormulaireCreation(type) {
         errorEl.textContent = '';
 
         try {
-            const fileInput = document.getElementById('modalImage');
-            const hasFile = fileInput && fileInput.files.length > 0;
+            // On récupère l'input fichier DANS le formulaire courant (évite tout
+            // conflit d'id avec un ancien modal resté dans le DOM).
+            const currentForm = e.currentTarget;
+            const fileInput = currentForm.querySelector('#modalImage') || document.getElementById('modalImage');
+            const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+
+            // Avertissement clair si un logo/image est attendu mais absent.
+            if ((type === 'partner' || type === 'gallery') && !hasFile) {
+                errorEl.textContent = "Veuillez sélectionner un fichier image (logo) avant d'enregistrer.";
+                return;
+            }
 
             if (useFormData || hasFile) {
                 const formData = new FormData();
