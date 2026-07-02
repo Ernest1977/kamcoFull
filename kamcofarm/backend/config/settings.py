@@ -24,13 +24,78 @@ load_dotenv(BASE_DIR.parent / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'clé-temporaire-dev-uniquement')
+# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'clé-temporaire-dev-uniquement')
+
+from django.core.exceptions import ImproperlyConfigured
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'dev-only-kamcofarm-secret-key-not-for-production'
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY est obligatoire en production."
+        )
+
+if not DEBUG and len(SECRET_KEY) < 50:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY est trop courte pour la production. "
+        "Utilise une clé aléatoire d'au moins 50 caractères."
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+
+
+# ========================================
+# SÉCURITÉ PRODUCTION
+# ========================================
+
+IS_PRODUCTION = not DEBUG
+
+SECURE_SSL_REDIRECT = os.environ.get(
+    'SECURE_SSL_REDIRECT',
+    'True' if IS_PRODUCTION else 'False'
+).lower() == 'true'
+
+SESSION_COOKIE_SECURE = os.environ.get(
+    'SESSION_COOKIE_SECURE',
+    'True' if IS_PRODUCTION else 'False'
+).lower() == 'true'
+
+CSRF_COOKIE_SECURE = os.environ.get(
+    'CSRF_COOKIE_SECURE',
+    'True' if IS_PRODUCTION else 'False'
+).lower() == 'true'
+
+SECURE_HSTS_SECONDS = int(os.environ.get(
+    'SECURE_HSTS_SECONDS',
+    '31536000' if IS_PRODUCTION else '0'
+))
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
+    'SECURE_HSTS_INCLUDE_SUBDOMAINS',
+    'True' if IS_PRODUCTION else 'False'
+).lower() == 'true'
+
+SECURE_HSTS_PRELOAD = os.environ.get(
+    'SECURE_HSTS_PRELOAD',
+    'True' if IS_PRODUCTION else 'False'
+).lower() == 'true'
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SESSION_COOKIE_HTTPONLY = True
+
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
 
 
 # Application definition
