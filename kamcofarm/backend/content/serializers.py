@@ -130,6 +130,7 @@ class DocumentInterneSerializer(serializers.ModelSerializer):
     uploade_par_nom = serializers.CharField(source='uploade_par.username', read_only=True)
     fichier_url = serializers.SerializerMethodField()
     taille_formatee = serializers.SerializerMethodField()
+    est_actif = serializers.BooleanField(required=False, default=True)
 
     class Meta:
         model = DocumentInterne
