@@ -108,11 +108,18 @@ class DocumentInterneViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        qs = DocumentInterne.objects.filter(est_actif=True)
         user = self.request.user
+        role = user.role
+
+        # Un ADMIN / DIR voit TOUS les documents (y compris inactifs),
+        # afin de pouvoir les gérer depuis le dashboard.
+        # Les autres rôles ne voient que les documents actifs.
+        if role in ['ADMIN', 'DIR']:
+            qs = DocumentInterne.objects.all()
+        else:
+            qs = DocumentInterne.objects.filter(est_actif=True)
 
         # Filtrer selon la visibilité et le rôle
-        role = user.role
         if role in ['ADMIN', 'DIR']:
             pass  # Accès total
         elif role == 'RH':
@@ -133,7 +140,11 @@ class DocumentInterneViewSet(viewsets.ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
-        serializer.save(uploade_par=self.request.user)
+        # Ceinture + bretelles : on force est_actif=True à la création.
+        # En multipart/form-data, un BooleanField omis est interprété par DRF
+        # comme False. Le formulaire dashboard n'envoie pas est_actif, donc
+        # sans cette ligne le document serait créé inactif puis invisible.
+        serializer.save(uploade_par=self.request.user, est_actif=True)
 
 
 # ========================================

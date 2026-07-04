@@ -9,7 +9,7 @@ async function loadContentModule() {
         const dashData = await apiGet('/api/content/dashboard/').catch(() => null);
         const categoriesData = await apiGet('/api/content/categories/').catch(() => []);
         const pagesData = await apiGet('/api/content/pages/').catch(() => []);
-        const documentsData = await apiGet('/api/content/documents/').catch(() => []);
+        const documentsData = await apiGet('/api/content/documents/?_ts=' + Date.now()).catch(() => []);
         const mediasData = await apiGet('/api/content/medias/').catch(() => []);
         const faqsData = await apiGet('/api/content/faqs/').catch(() => []);
 
@@ -196,13 +196,14 @@ function renderCntDocuments(docList) {
             <div class="responsive-desktop-view">
                 <div class="table-container">
                     <table class="dash-table">
-                        <thead><tr><th>Titre</th><th>Type</th><th>Visibilité</th><th>Version</th><th>Taille</th><th>Ext.</th><th>Par</th><th>Date</th><th>Actions</th></tr></thead>
+                        <thead><tr><th>Titre</th><th>Type</th><th>Visibilité</th><th>Statut</th><th>Version</th><th>Taille</th><th>Ext.</th><th>Par</th><th>Date</th><th>Actions</th></tr></thead>
                         <tbody>
                             ${docList.map(d => `
                                 <tr>
                                     <td><strong>${escapeHtml(d.titre)}</strong></td>
                                     <td><span class="badge badge-info">${escapeHtml(d.type_display || d.type_document)}</span></td>
                                     <td><span class="badge badge-purple">${escapeHtml(d.visibilite_display || d.visibilite)}</span></td>
+                                    <td>${d.est_actif ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-danger">Inactif</span>'}</td>
                                     <td>v${escapeHtml(d.version || '1.0')}</td>
                                     <td><small>${escapeHtml(d.taille_formatee || 'N/A')}</small></td>
                                     <td><code>${escapeHtml(d.extension || '?')}</code></td>
