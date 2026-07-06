@@ -22,7 +22,7 @@ RUN pip install --upgrade pip \
 
 COPY backend /app/
 
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py collectstatic --noinput
 
 COPY backend/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
