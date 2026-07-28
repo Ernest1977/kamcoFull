@@ -6,8 +6,8 @@ services:
     environment:
       MYSQL_DATABASE: ${DB_NAME:-foss_agro_db}
       MYSQL_USER: ${DB_USER:-foss_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-kamcofarm_db_pass}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_db_pass}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Isai1234}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Isai1234}
     volumes:
       - db_data:/var/lib/mysql
     ports:
