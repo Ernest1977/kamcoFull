@@ -65,7 +65,7 @@ class PageContenu(models.Model):
 
     titre_fr = models.CharField(max_length=255)
     titre_en = models.CharField(max_length=255, blank=True, null=True)
-    slug = models.SlugField(max_length=280, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
 
     categorie = models.ForeignKey(
         CategorieContenu,
