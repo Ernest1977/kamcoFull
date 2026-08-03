@@ -2,12 +2,6 @@ from rest_framework.permissions import BasePermission
 
 
 def _role_a_capacite(user, capacite):
-    """
-    Retourne True si le rôle (catalogue) de l'utilisateur possède la capacité
-    demandée. Permet aux NOUVEAUX rôles de bénéficier de droits sans modifier
-    le code existant. En cas d'erreur, on retombe silencieusement sur False
-    (la vérification par code en dur reste la source de vérité principale).
-    """
     try:
         from .models import Role
         role = Role.objects.filter(code=user.role, est_actif=True).only('permissions').first()
@@ -19,7 +13,6 @@ def _role_a_capacite(user, capacite):
 
 
 class IsAdminOrDirector(BasePermission):
-    """Seuls ADMIN et DIR peuvent accéder (ou rôle avec capacité admin/direction)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -29,7 +22,6 @@ class IsAdminOrDirector(BasePermission):
 
 
 class IsFinance(BasePermission):
-    """ADMIN, DIR et COMPTA (ou rôle avec capacité finance)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -39,7 +31,6 @@ class IsFinance(BasePermission):
 
 
 class IsHR(BasePermission):
-    """ADMIN, DIR et RH (ou rôle avec capacité rh)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -49,7 +40,6 @@ class IsHR(BasePermission):
 
 
 class IsLogistique(BasePermission):
-    """ADMIN, DIR et LOG (ou rôle avec capacité logistique)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -59,7 +49,6 @@ class IsLogistique(BasePermission):
 
 
 class IsCommercial(BasePermission):
-    """ADMIN, DIR et COMM (ou rôle avec capacité commercial)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
@@ -69,7 +58,6 @@ class IsCommercial(BasePermission):
 
 
 class IsCommercialeOuLogistique(BasePermission):
-    """ADMIN, DIR, COMM et LOG (ou rôle avec capacité commercial/logistique)."""
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False

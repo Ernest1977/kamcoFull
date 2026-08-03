@@ -24,15 +24,7 @@ class User(AbstractUser):
 
 
 class Role(models.Model):
-    """
-    Catalogue des rôles de l'ERP.
-
-    Ce modèle COMPLÈTE le champ ``User.role`` (qui reste un simple code texte
-    pour ne pas casser la logique de permissions existante). Chaque rôle porte
-    un ``code`` qui doit correspondre à la valeur stockée dans ``User.role``,
-    ainsi qu'une liste de ``permissions`` (capacités) qui étend les droits
-    des nouveaux rôles sans toucher au code existant.
-    """
+    """Catalogue des rôles de l'ERP (complète le champ User.role)."""
 
     CAPACITES = [
         ('admin', 'Administration (accès complet)'),
@@ -44,17 +36,11 @@ class Role(models.Model):
         ('marketing', 'Marketing'),
     ]
 
-    code = models.CharField(
-        max_length=20, unique=True,
-        help_text="Code interne (ex: ADMIN, DIR). Doit correspondre au champ User.role."
-    )
+    code = models.CharField(max_length=20, unique=True, help_text="Code interne (ex: ADMIN, DIR). Doit correspondre au champ User.role.")
     nom = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     couleur = models.CharField(max_length=20, default='#188701', help_text="Couleur du badge (hex).")
-    permissions = models.JSONField(
-        default=list, blank=True,
-        help_text="Liste des capacités accordées (ex: ['finance', 'rh'])."
-    )
+    permissions = models.JSONField(default=list, blank=True, help_text="Liste des capacités accordées (ex: ['finance', 'rh']).")
     est_actif = models.BooleanField(default=True)
     ordre = models.PositiveIntegerField(default=0)
     date_creation = models.DateTimeField(auto_now_add=True)
