@@ -517,12 +517,12 @@ function applyRolePermissions() {
         'ADMIN': [
             'overview', 'supplychain', 'finance', 'rh', 'marketing',
             'equipements', 'location', 'admin', 'content',
-            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'profil', 'calendrier'
+            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'roles', 'profil', 'calendrier'
         ],
         'DIR': [
             'overview', 'supplychain', 'finance', 'rh', 'marketing',
             'equipements', 'location', 'admin', 'content',
-            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'profil', 'calendrier'
+            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'roles', 'profil', 'calendrier'
         ],
         'COMPTA': ['overview', 'finance', 'profil', 'calendrier'],
         'RH': ['overview', 'rh', 'profil', 'calendrier'],
@@ -669,6 +669,7 @@ async function navigateTo(moduleName) {
         'testimonials': 'Gestion des Témoignages',
         'statistics': 'Gestion des Statistiques',
         'accounts': 'Gestion des Comptes',
+        'roles': 'Gestion des Rôles',
         'profil': 'Mon Profil',
         'calendrier': 'Calendrier des Événements'
     };
@@ -739,6 +740,9 @@ async function navigateTo(moduleName) {
                 break;
             case 'accounts':
                 await loadAccountsModule();
+                break;
+            case 'roles':
+                await loadRolesModule();
                 break;
             case 'calendrier':
                 await loadCalendrierModule();

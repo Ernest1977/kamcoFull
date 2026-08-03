@@ -1,12 +1,14 @@
 from rest_framework import viewsets
-from rest_framework.decorators import api_view, permission_classes, action, parser_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework import status as http_status
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema
-from .serializers import UserSerializer
+from .models import Role
+from .serializers import UserSerializer, RoleSerializer
+from .permissions import IsAdminOrDirector
 
 User = get_user_model()
 
@@ -51,7 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def get_permissions(self):
-        from accounts.permissions import IsAdminOrDirector
         return [IsAdminOrDirector()]
 
     def get_queryset(self):
@@ -90,8 +91,21 @@ class UserViewSet(viewsets.ModelViewSet):
     def changer_role(self, request, pk=None):
         user = self.get_object()
         nouveau_role = request.data.get('role')
+        if not nouveau_role:
+            return Response(
+                {"erreur": "Rôle requis."},
+                status=http_status.HTTP_400_BAD_REQUEST
+            )
+        nouveau_role = str(nouveau_role).upper()
 
+        # Rôles de base + rôles du catalogue (nouveaux rôles autorisés)
         roles_valides = [r[0] for r in User.ROLE_CHOICES]
+        try:
+            codes_catalogue = list(Role.objects.values_list('code', flat=True))
+            roles_valides = list(set(roles_valides + codes_catalogue))
+        except Exception:
+            pass
+
         if nouveau_role not in roles_valides:
             return Response(
                 {"erreur": f"Rôle invalide. Valides : {roles_valides}"},
@@ -126,6 +140,43 @@ class UserViewSet(viewsets.ModelViewSet):
         user.is_staff = not user.is_staff
         user.save()
         return Response(UserSerializer(user).data)
+
+
+class RoleViewSet(viewsets.ModelViewSet):
+    """
+    CRUD complet du catalogue des rôles de l'ERP.
+    Réservé à ADMIN et DIR. Les rôles centralux (ADMIN, VISITOR) ne peuvent
+    pas être supprimés, et un rôle assigné à des utilisateurs ne l'est pas non plus.
+    """
+    queryset = Role.objects.all().order_by('ordre', 'nom')
+    serializer_class = RoleSerializer
+    permission_classes = [IsAdminOrDirector]
+
+    def get_queryset(self):
+        qs = Role.objects.all().order_by('ordre', 'nom')
+        actif = self.request.query_params.get('actif')
+        if actif is not None:
+            qs = qs.filter(est_actif=(actif.lower() == 'true'))
+        return qs
+
+    def destroy(self, request, *args, **kwargs):
+        role = self.get_object()
+
+        # Rôles centraux non supprimables (sécurité)
+        if role.code in ['ADMIN', 'VISITOR']:
+            return Response(
+                {"erreur": f"Le rôle « {role.nom} » est un rôle central et ne peut pas être supprimé."},
+                status=http_status.HTTP_400_BAD_REQUEST
+            )
+
+        # Empêcher la suppression si des utilisateurs y sont assignés
+        if User.objects.filter(role=role.code).exists():
+            return Response(
+                {"erreur": f"Impossible de supprimer le rôle « {role.nom} » : des utilisateurs y sont assignés."},
+                status=http_status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().destroy(request, *args, **kwargs)
 
 
 @api_view(['GET'])
@@ -262,15 +313,9 @@ def modifier_mon_profil(request):
     for champ in champs_modifiables:
         if champ in request.data:
             setattr(user, champ, request.data[champ])
-    
+
     if 'signature' in request.FILES:
         user.signature = request.FILES['signature']
 
     user.save()
     return Response(UserSerializer(user, context={'request': request}).data)
-
-
-
-
-
-

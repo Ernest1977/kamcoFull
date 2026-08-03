@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('ADMIN', 'Administrateur'),
@@ -12,7 +13,7 @@ class User(AbstractUser):
         ('AGRI', 'Agent terrain'),
         ('VISITOR', 'Visiteur'),
     ]
-    
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='VISITOR')
     phone = models.CharField(max_length=30, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
@@ -20,3 +21,49 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
+
+
+class Role(models.Model):
+    """
+    Catalogue des rôles de l'ERP.
+
+    Ce modèle COMPLÈTE le champ ``User.role`` (qui reste un simple code texte
+    pour ne pas casser la logique de permissions existante). Chaque rôle porte
+    un ``code`` qui doit correspondre à la valeur stockée dans ``User.role``,
+    ainsi qu'une liste de ``permissions`` (capacités) qui étend les droits
+    des nouveaux rôles sans toucher au code existant.
+    """
+
+    CAPACITES = [
+        ('admin', 'Administration (accès complet)'),
+        ('direction', 'Direction générale'),
+        ('finance', 'Finance & Comptabilité'),
+        ('rh', 'Ressources Humaines'),
+        ('logistique', 'Logistique & Supply Chain'),
+        ('commercial', 'Commercial'),
+        ('marketing', 'Marketing'),
+    ]
+
+    code = models.CharField(
+        max_length=20, unique=True,
+        help_text="Code interne (ex: ADMIN, DIR). Doit correspondre au champ User.role."
+    )
+    nom = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    couleur = models.CharField(max_length=20, default='#188701', help_text="Couleur du badge (hex).")
+    permissions = models.JSONField(
+        default=list, blank=True,
+        help_text="Liste des capacités accordées (ex: ['finance', 'rh'])."
+    )
+    est_actif = models.BooleanField(default=True)
+    ordre = models.PositiveIntegerField(default=0)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['ordre', 'nom']
+        verbose_name = 'Rôle'
+        verbose_name_plural = 'Rôles'
+
+    def __str__(self):
+        return self.nom

@@ -3,11 +3,12 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     me, liste_utilisateurs, liste_equipe_commerciale,
     UserViewSet, mon_profil_complet, changer_mon_mot_de_passe,
-    modifier_mon_profil
+    modifier_mon_profil, RoleViewSet
 )
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'roles', RoleViewSet, basename='role')
 
 urlpatterns = [
     path('me/', me, name='me'),

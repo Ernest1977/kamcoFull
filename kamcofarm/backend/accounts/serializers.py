@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Role
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,3 +32,25 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_a_profil_employe(self, obj):
         return hasattr(obj, 'profil_employe')
+
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = [
+            'id', 'code', 'nom', 'description', 'couleur',
+            'permissions', 'est_actif', 'ordre',
+            'date_creation', 'date_modification'
+        ]
+        read_only_fields = ['date_creation', 'date_modification']
+
+    def validate_code(self, value):
+        value = str(value).strip().upper()
+        if not value:
+            raise serializers.ValidationError("Le code est requis.")
+        if len(value) > 10:
+            # Contrainte héritée du champ User.role (CharField max_length=10)
+            raise serializers.ValidationError(
+                "Le code doit faire au plus 10 caractères (contrainte du champ utilisateur)."
+            )
+        return value

@@ -270,6 +270,29 @@ async function ouvrirFormulaireAccount(editData = null) {
     const titre = editData ? `Modifier @${editData.username}` : 'Nouveau compte';
     const endpoint = editData ? `/api/accounts/users/${editData.id}/` : '/api/accounts/users/';
 
+    // Récupérer la liste des rôles existants (catalogue) pour la liste déroulante
+    let roleOptions = '';
+    try {
+        const rolesData = await apiGet('/api/accounts/roles/?actif=true');
+        const roles = Array.isArray(rolesData) ? rolesData : (rolesData.results || []);
+        if (roles.length) {
+            roleOptions = roles.map(r =>
+                `<option value="${escapeHtml(r.code)}" ${editData?.role === r.code ? 'selected' : ''}>${escapeHtml(r.nom)}</option>`
+            ).join('');
+        }
+    } catch (e) {
+        console.warn('Rôles indisponibles, fallback local :', e.message);
+    }
+    if (!roleOptions) {
+        // Fallback si l'API des rôles n'est pas encore disponible
+        const fallback = [
+            ['VISITOR', 'Visiteur'], ['AGRI', 'Agent terrain'], ['LOG', 'Logistique'],
+            ['COMM', 'Commercial'], ['COMPTA', 'Comptable'], ['RH', 'Ressources Humaines'],
+            ['DIR', 'Directeur Général'], ['ADMIN', 'Administrateur']
+        ];
+        roleOptions = fallback.map(([v, l]) => `<option value="${v}" ${editData?.role === v ? 'selected' : ''}>${l}</option>`).join('');
+    }
+
     const modal = document.createElement('div'); modal.id = 'modalCreation';
     modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
     modal.innerHTML = `
@@ -300,15 +323,9 @@ async function ouvrirFormulaireAccount(editData = null) {
                     <div class="form-grid">
                         <div class="form-field"><label>Rôle <span class="required">*</span></label>
                             <select id="accRole" required>
-                                <option value="VISITOR" ${editData?.role === 'VISITOR' ? 'selected' : ''}>Visiteur</option>
-                                <option value="AGRI" ${editData?.role === 'AGRI' ? 'selected' : ''}>Agent terrain</option>
-                                <option value="LOG" ${editData?.role === 'LOG' ? 'selected' : ''}>Logistique</option>
-                                <option value="COMM" ${editData?.role === 'COMM' ? 'selected' : ''}>Commercial</option>
-                                <option value="COMPTA" ${editData?.role === 'COMPTA' ? 'selected' : ''}>Comptable</option>
-                                <option value="RH" ${editData?.role === 'RH' ? 'selected' : ''}>Ressources Humaines</option>
-                                <option value="DIR" ${editData?.role === 'DIR' ? 'selected' : ''}>Directeur Général</option>
-                                <option value="ADMIN" ${editData?.role === 'ADMIN' ? 'selected' : ''}>Administrateur</option>
+                                ${roleOptions}
                             </select>
+                            <span class="field-help">Les rôles proviennent du catalogue (onglet Rôles). Si le rôle recherché n'existe pas, créez-le dans l'onglet Rôles.</span>
                         </div>
                     </div>
                     <div class="form-checkbox"><input type="checkbox" id="accStaff" ${editData?.is_staff ? 'checked' : ''}><label for="accStaff">🔑 Accès staff (administration)</label></div>
