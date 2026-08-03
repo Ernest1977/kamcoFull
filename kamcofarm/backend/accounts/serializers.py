@@ -3,7 +3,7 @@ from .models import User, Role
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role_display = serializers.CharField(source='get_role_display', read_only=True)
+    role_display = serializers.SerializerMethodField()
     nom_complet = serializers.SerializerMethodField()
     a_profil_employe = serializers.SerializerMethodField()
 
@@ -49,5 +49,8 @@ class RoleSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Le code est requis.")
         if len(value) > 10:
-            raise serializers.ValidationError("Le code doit faire au plus 10 caractères (contrainte du champ utilisateur).")
+            # Contrainte héritée du champ User.role (CharField max_length=10)
+            raise serializers.ValidationError(
+                "Le code doit faire au plus 10 caractères (contrainte du champ utilisateur)."
+            )
         return value
