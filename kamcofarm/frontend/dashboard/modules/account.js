@@ -370,14 +370,23 @@ async function editerAccount(id) {
     try { const u = await apiGet(`/api/accounts/users/${id}/`); ouvrirFormulaireAccount(u); } catch(e) { alert(e.message); }
 }
 
-// CHANGER RÔLE
+// CHANGER RÔLE (liste déroulante peuplée depuis le catalogue des rôles)
 async function changerRoleAccount(id) {
-    const roles = [
+    let roles = [
         {value:'VISITOR', label:'👤 Visiteur'}, {value:'AGRI', label:'🌱 Agent terrain'},
         {value:'LOG', label:'🚚 Logistique'}, {value:'COMM', label:'📣 Commercial'},
         {value:'COMPTA', label:'💰 Comptable'}, {value:'RH', label:'👥 RH'},
         {value:'DIR', label:'👔 Directeur Général'}, {value:'ADMIN', label:'👑 Administrateur'}
     ];
+    try {
+        const rolesData = await apiGet('/api/accounts/roles/?actif=true');
+        const catalogue = Array.isArray(rolesData) ? rolesData : (rolesData.results || []);
+        if (catalogue.length) {
+            roles = catalogue.map(r => ({ value: r.code, label: escapeHtml(r.nom) }));
+        }
+    } catch (e) {
+        console.warn('Rôles indisponibles, fallback local :', e.message);
+    }
     const existant = document.getElementById('modalCreation'); if (existant) existant.remove();
     const modal = document.createElement('div'); modal.id = 'modalCreation';
     modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
