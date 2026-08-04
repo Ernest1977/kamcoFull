@@ -30,6 +30,20 @@ class UserSerializer(serializers.ModelSerializer):
         full = obj.get_full_name()
         return full if full else obj.username
 
+    def _roles_cache(self):
+        if not hasattr(self, '_roles_dict'):
+            from .models import Role
+            try:
+                self._roles_dict = {r.code: r.nom for r in Role.objects.all()}
+            except Exception:
+                self._roles_dict = {}
+        return self._roles_dict
+
+    def get_role_display(self, obj):
+        # Affiche le libellé du catalogue (ex: "Marketing") pour tous les rôles,
+        # standards et personnalisés ; repli sur le code si introuvable.
+        return self._roles_cache().get(obj.role, obj.role)
+
     def get_a_profil_employe(self, obj):
         return hasattr(obj, 'profil_employe')
 
