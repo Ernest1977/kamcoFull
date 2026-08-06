@@ -10,5 +10,10 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('role', 'phone', 'department'),
         }),
     )
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ('Informations complémentaires', {
+            'fields': ('role', 'phone', 'department'),
+        }),
+    )
     list_display = ('username', 'email', 'role', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser', 'is_active')
