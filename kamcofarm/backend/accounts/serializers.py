@@ -62,9 +62,9 @@ class RoleSerializer(serializers.ModelSerializer):
         value = str(value).strip().upper()
         if not value:
             raise serializers.ValidationError("Le code est requis.")
-        if len(value) > 10:
-            # Contrainte héritée du champ User.role (CharField max_length=10)
+        if len(value) > 20:
+            # Contrainte héritée du champ User.role (CharField max_length=20)
             raise serializers.ValidationError(
-                "Le code doit faire au plus 10 caractères (contrainte du champ utilisateur)."
+                "Le code doit faire au plus 20 caractères (contrainte du champ utilisateur)."
             )
         return value
