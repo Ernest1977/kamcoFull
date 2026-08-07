@@ -28,8 +28,12 @@ class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
+            # Récupère tous les rôles actifs du catalogue
             roles = Role.objects.filter(est_actif=True).order_by('ordre')
-            self.fields['role'].choices = [(r.code, r.nom) for r in roles]
+            choices = [(r.code, r.nom) for r in roles]
+            if not choices:
+                choices = User.ROLE_CHOICES
+            self.fields['role'].choices = choices
         except:
             self.fields['role'].choices = User.ROLE_CHOICES
 

@@ -14,7 +14,7 @@ class User(AbstractUser):
         ('VISITOR', 'Visiteur'),
     ]
 
-    role = models.CharField(max_length=20, default='VISITOR', choices=ROLE_CHOICES)
+    role = models.CharField(max_length=20, default='VISITOR')
     phone = models.CharField(max_length=30, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
     signature = models.ImageField(upload_to='signatures/', blank=True, null=True, help_text="Signature numérisée (fond transparent recommandé)")
