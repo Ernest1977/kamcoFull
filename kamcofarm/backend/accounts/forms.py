@@ -3,9 +3,13 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 class CustomUserCreationForm(UserCreationForm):
-    class Meta:
+    # On s'assure que l'email est présent car il est souvent requis
+    email = forms.EmailField(required=False)
+
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email', 'role', 'phone', 'department', 'signature')
+        # On liste explicitement TOUS les champs qui apparaîtront dans les sections de l'admin
+        fields = ("username", "email", "role", "phone", "department", "signature")
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
