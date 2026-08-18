@@ -11,8 +11,8 @@ class UserAdmin(BaseUserAdmin):
     # Sécurisation de la liste des colonnes
     #list_display = ('username', 'email', 'get_role_label', 'is_staff', 'is_active')
     #list_filter = ('is_staff', 'is_active') # On simplifie le filtre pour tester
-    #search_fields = ('username', 'first_name', 'last_name', 'email')
-    #ordering = ('username',)
+    search_fields = ('username', 'first_name', 'last_name', 'email')
+    ordering = ('username',)
 
     list_display = ('username', 'email', 'role', 'is_staff') # Liste ultra simplifiée
     list_select_related = None # Désactive les jointures automatiques pour test
