@@ -181,7 +181,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST', 'db'),
         'PORT': '3306',
-        'CONN_MAX_AGE': 60,  # Assurez-vous que cette ligne se termine par une virgule
+        'CONN_MAX_AGE': 0,  # Assurez-vous que cette ligne se termine par une virgule
     }
 }
 
