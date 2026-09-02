@@ -4,6 +4,8 @@ from .models import User, Role
 
 class UserSerializer(serializers.ModelSerializer):
     role_display = serializers.SerializerMethodField()
+    role_permissions = serializers.SerializerMethodField()
+    role_actif = serializers.SerializerMethodField()
     nom_complet = serializers.SerializerMethodField()
     a_profil_employe = serializers.SerializerMethodField()
 
@@ -12,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'nom_complet', 'role', 'role_display',
+            'role_permissions', 'role_actif',
             'phone', 'department', 'signature',
             'is_active', 'is_staff', 'is_superuser',
             'date_joined', 'last_login',
@@ -34,15 +37,37 @@ class UserSerializer(serializers.ModelSerializer):
         if not hasattr(self, '_roles_dict'):
             from .models import Role
             try:
-                self._roles_dict = {r.code: r.nom for r in Role.objects.all()}
+                self._roles_dict = {
+                    r.code: {
+                        'nom': r.nom,
+                        'permissions': r.permissions or [],
+                        'est_actif': r.est_actif,
+                    }
+                    for r in Role.objects.all()
+                }
             except Exception:
                 self._roles_dict = {}
         return self._roles_dict
 
+    def _role_info(self, obj):
+        return self._roles_cache().get(obj.role) or {}
+
+    def get_role_permissions(self, obj):
+        """Capacités accordées au rôle (source unique de vérité pour le frontend)."""
+        if obj.is_superuser:
+            return ['admin']
+        return self._role_info(obj).get('permissions', [])
+
+    def get_role_actif(self, obj):
+        """True si le rôle existe dans le catalogue Role et est actif."""
+        if obj.is_superuser:
+            return True
+        return bool(self._role_info(obj).get('est_actif', False))
+
     def get_role_display(self, obj):
         # Affiche le libellé du catalogue (ex: "Marketing") pour tous les rôles,
         # standards et personnalisés ; repli sur le code si introuvable.
-        return self._roles_cache().get(obj.role, obj.role)
+        return self._role_info(obj).get('nom', obj.role)
 
     def get_a_profil_employe(self, obj):
         return hasattr(obj, 'profil_employe')

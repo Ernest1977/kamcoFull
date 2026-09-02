@@ -390,11 +390,23 @@ async function login(username, password) {
 
         AppState.user = await meResponse.json();
 
-        // Vérifier les rôles autorisés
-        const rolesAutorises = ['ADMIN', 'DIR', 'RH', 'COMPTA', 'COMM', 'LOG'];
-        if (!rolesAutorises.includes(AppState.user.role)) {
+        // Contrôle d'accès dynamique : plus de liste de rôles en dur.
+        // Le backend est la source de vérité (catalogue accounts.Role).
+        const u = AppState.user;
+        const roleActif = (u.role_actif === true) || u.is_superuser === true;
+        const aDesCapacites = Array.isArray(u.role_permissions) && u.role_permissions.length > 0;
+
+        if (!u.is_active) {
             clearTokens();
-            throw new Error('Accès non autorisé pour ce rôle');
+            throw new Error('Votre compte est désactivé. Contactez un administrateur.');
+        }
+        if (!roleActif) {
+            clearTokens();
+            throw new Error(`Votre rôle "${u.role}" n'existe pas ou est désactivé dans le catalogue des rôles.`);
+        }
+        if (!aDesCapacites) {
+            clearTokens();
+            throw new Error(`Aucune capacité n'est encore accordée au rôle "${u.role_display || u.role}". Demandez à un administrateur de cocher ses permissions.`);
         }
 
         return true;
@@ -509,32 +521,48 @@ function updateUserUI() {
     applyRolePermissions();
 }
 
+// Correspondance capacité (accounts.Role.permissions) -> modules du dashboard.
+// Pour ajouter un nouveau rôle : il suffit de le créer dans Django Admin
+// et de cocher ses capacités. Aucune modification de ce fichier n'est requise.
+const MODULES_PAR_CAPACITE = {
+    'admin': [
+        'overview', 'supplychain', 'finance', 'rh', 'marketing',
+        'equipements', 'location', 'admin', 'content',
+        'produits', 'gallery', 'partners', 'blogadmin', 'testimonials',
+        'statistics', 'accounts', 'roles', 'profil', 'calendrier'
+    ],
+    'direction': [
+        'overview', 'supplychain', 'finance', 'rh', 'marketing',
+        'equipements', 'location', 'admin', 'content',
+        'produits', 'gallery', 'partners', 'blogadmin', 'testimonials',
+        'statistics', 'accounts', 'roles', 'profil', 'calendrier'
+    ],
+    'finance': ['overview', 'finance', 'statistics'],
+    'rh': ['overview', 'rh'],
+    'logistique': ['overview', 'supplychain', 'equipements', 'location'],
+    'commercial': ['overview', 'supplychain', 'marketing', 'location', 'produits'],
+    'marketing': ['overview', 'marketing', 'content', 'blogadmin', 'gallery', 'testimonials', 'partners', 'statistics'],
+};
+
+// Modules toujours accessibles à tout utilisateur connecté et autorisé
+const MODULES_DE_BASE = ['overview', 'profil', 'calendrier'];
+
 function applyRolePermissions() {
-    const role = AppState.user?.role;
-    if (!role) return;
+    const user = AppState.user;
+    if (!user) return;
 
-    const permissions = {
-        'ADMIN': [
-            'overview', 'supplychain', 'finance', 'rh', 'marketing',
-            'equipements', 'location', 'admin', 'content',
-            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'roles', 'profil', 'calendrier'
-        ],
-        'DIR': [
-            'overview', 'supplychain', 'finance', 'rh', 'marketing',
-            'equipements', 'location', 'admin', 'content',
-            'produits', 'gallery', 'partners', 'blogadmin', 'testimonials', 'statistics', 'accounts', 'roles', 'profil', 'calendrier'
-        ],
-        'COMPTA': ['overview', 'finance', 'profil', 'calendrier'],
-        'RH': ['overview', 'rh', 'profil', 'calendrier'],
-        'COMM': ['overview', 'supplychain', 'marketing', 'location', 'profil', 'calendrier'],
-        'LOG': ['overview', 'supplychain', 'equipements', 'location', 'profil', 'calendrier'],
-    };
+    const capacites = user.is_superuser
+        ? ['admin']
+        : (Array.isArray(user.role_permissions) ? user.role_permissions : []);
 
-    const modulesPermis = permissions[role] || ['overview'];
+    const modulesPermis = new Set(MODULES_DE_BASE);
+    capacites.forEach(cap => {
+        (MODULES_PAR_CAPACITE[cap] || []).forEach(m => modulesPermis.add(m));
+    });
 
     document.querySelectorAll('.nav-item[data-module]').forEach(item => {
         const module = item.dataset.module;
-        if (modulesPermis.includes(module)) {
+        if (modulesPermis.has(module)) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
