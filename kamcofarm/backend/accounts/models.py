@@ -20,7 +20,8 @@ class User(AbstractUser):
     signature = models.ImageField(upload_to='signatures/', blank=True, null=True, help_text="Signature numérisée (fond transparent recommandé)")
 
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        # On affiche le username et le code du rôle simplement
+        return f"{self.username} ({self.role})"
 
 
 class Role(models.Model):
