@@ -75,7 +75,12 @@
 
     <!-- Hero Section -->
     <section class="hero" id="accueil">
-        <div class="hero-image"><img src="images/back-hero.png" alt="Fruits et légumes tropicaux KAMCO FARM"></div>
+        <div class="hero-image">
+            <picture>
+                <source srcset="images/hero-fruits.webp" type="image/webp">
+                <img src="images/hero-fruits.jpg" alt="Fruits et légumes tropicaux KAMCO FARM : ananas, papaye, avocat, cacao, gingembre, noix de cajou, café" width="1600" height="900" fetchpriority="high" decoding="async">
+            </picture>
+        </div>
         <h1 data-translate="hero.title">Bienvenue chez KAMCO FARM</h1>
         <p data-translate="hero.subtitle">Leader dans la Culture, la Vente et le Négoce de Fruits et Légumes Tropicaux de Qualité Premium</p>
         <div class="hero-buttons">
@@ -512,7 +517,7 @@
                         <span>✉️</span>
                         <div>
                             <strong>Email:</strong><br>
-                            infoclients@kamcofarm.com
+                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b02050d040807020e051f182b000a0608040d0a190645080406">[email&#160;protected]</a>
                         </div>
                     </div>
                     
@@ -599,7 +604,7 @@
     </footer>
    
     <!-- Lien vers le fichier JavaScript -->
-    <script src="script.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="script.js"></script>
     <script src="dashboard/modules/whatsapp-chat.js"></script>
 
 
@@ -765,5 +770,5 @@
     }
     </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a356fd34c89ff41b',t:'MTc4ODQ2MTkzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
